@@ -1,2 +1,2 @@
 # SafeStbTrueTypeSharp
-Safe version of StbTrueTypeSharp
+Safe version of StbTrueTypeSharp 1.24
