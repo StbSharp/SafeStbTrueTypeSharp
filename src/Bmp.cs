@@ -5,7 +5,7 @@ namespace StbTrueTypeSharp
 {
 	partial class StbTrueType
 	{
-		public static void stbtt__handle_clipped_edge(FakePtr<float> scanline, int x, stbtt__active_edge e, float x0,
+		public static void stbtt__handle_clipped_edge(float[] scanline, int offset, int x, stbtt__active_edge e, float x0,
 			float y0, float x1, float y1)
 		{
 			if (y0 == y1)
@@ -28,18 +28,18 @@ namespace StbTrueTypeSharp
 
 			if (x0 <= x && x1 <= x)
 			{
-				scanline[x] += e.direction * (y1 - y0);
+				scanline[x + offset] += e.direction * (y1 - y0);
 			}
 			else if (x0 >= x + 1 && x1 >= x + 1)
 			{
 			}
 			else
 			{
-				scanline[x] += e.direction * (y1 - y0) * (1 - (x0 - x + (x1 - x)) / 2);
+				scanline[x + offset] += e.direction * (y1 - y0) * (1 - (x0 - x + (x1 - x)) / 2);
 			}
 		}
 
-		public static void stbtt__fill_active_edges_new(FakePtr<float> scanline, FakePtr<float> scanline_fill, int len,
+		public static void stbtt__fill_active_edges_new(float[] scanline, int scanline_fill, int len,
 			stbtt__active_edge e, float y_top)
 		{
 			var y_bottom = y_top + 1;
@@ -52,12 +52,12 @@ namespace StbTrueTypeSharp
 					{
 						if (x0 >= 0)
 						{
-							stbtt__handle_clipped_edge(scanline, (int)x0, e, x0, y_top, x0, y_bottom);
-							stbtt__handle_clipped_edge(scanline_fill - 1, (int)x0 + 1, e, x0, y_top, x0, y_bottom);
+							stbtt__handle_clipped_edge(scanline, 0, (int)x0, e, x0, y_top, x0, y_bottom);
+							stbtt__handle_clipped_edge(scanline, scanline_fill - 1, (int)x0 + 1, e, x0, y_top, x0, y_bottom);
 						}
 						else
 						{
-							stbtt__handle_clipped_edge(scanline_fill - 1, 0, e, x0, y_top, x0, y_bottom);
+							stbtt__handle_clipped_edge(scanline, scanline_fill - 1, 0, e, x0, y_top, x0, y_bottom);
 						}
 					}
 				}
@@ -101,7 +101,7 @@ namespace StbTrueTypeSharp
 							var x = (int)x_top;
 							height = sy1 - sy0;
 							scanline[x] += e.direction * (1 - (x_top - x + (x_bottom - x)) / 2) * height;
-							scanline_fill[x] += e.direction * height;
+							scanline[x + scanline_fill] += e.direction * height;
 						}
 						else
 						{
@@ -145,7 +145,7 @@ namespace StbTrueTypeSharp
 
 							y_crossing += dy * (x2 - (x1 + 1));
 							scanline[x2] += area + sign * (1 - (x2 - x2 + (x_bottom - x2)) / 2) * (sy1 - y_crossing);
-							scanline_fill[x2] += sign * (sy1 - sy0);
+							scanline[x2 + scanline_fill] += sign * (sy1 - sy0);
 						}
 					}
 					else
@@ -162,39 +162,39 @@ namespace StbTrueTypeSharp
 							var y2 = (x + 1 - x0) / dx + y_top;
 							if (x0 < x1 && x3 > x2)
 							{
-								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x1, y1);
-								stbtt__handle_clipped_edge(scanline, x, e, x1, y1, x2, y2);
-								stbtt__handle_clipped_edge(scanline, x, e, x2, y2, x3, y3);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x0, y0, x1, y1);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x1, y1, x2, y2);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x2, y2, x3, y3);
 							}
 							else if (x3 < x1 && x0 > x2)
 							{
-								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x2, y2);
-								stbtt__handle_clipped_edge(scanline, x, e, x2, y2, x1, y1);
-								stbtt__handle_clipped_edge(scanline, x, e, x1, y1, x3, y3);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x0, y0, x2, y2);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x2, y2, x1, y1);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x1, y1, x3, y3);
 							}
 							else if (x0 < x1 && x3 > x1)
 							{
-								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x1, y1);
-								stbtt__handle_clipped_edge(scanline, x, e, x1, y1, x3, y3);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x0, y0, x1, y1);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x1, y1, x3, y3);
 							}
 							else if (x3 < x1 && x0 > x1)
 							{
-								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x1, y1);
-								stbtt__handle_clipped_edge(scanline, x, e, x1, y1, x3, y3);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x0, y0, x1, y1);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x1, y1, x3, y3);
 							}
 							else if (x0 < x2 && x3 > x2)
 							{
-								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x2, y2);
-								stbtt__handle_clipped_edge(scanline, x, e, x2, y2, x3, y3);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x0, y0, x2, y2);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x2, y2, x3, y3);
 							}
 							else if (x3 < x2 && x0 > x2)
 							{
-								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x2, y2);
-								stbtt__handle_clipped_edge(scanline, x, e, x2, y2, x3, y3);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x0, y0, x2, y2);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x2, y2, x3, y3);
 							}
 							else
 							{
-								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x3, y3);
+								stbtt__handle_clipped_edge(scanline, 0, x, e, x0, y0, x3, y3);
 							}
 						}
 					}
@@ -211,14 +211,13 @@ namespace StbTrueTypeSharp
 			var y = 0;
 			var j = 0;
 			var i = 0;
-			var scanline_data = new float[129];
-			FakePtr<float> scanline;
-			FakePtr<float> scanline2;
+			float[] scanline;
+			int scanline2;
 			if (result.w > 64)
-				scanline = FakePtr<float>.CreateWithSize(result.w * 2 + 1);
+				scanline = new float[result.w * 2 + 1];
 			else
-				scanline = new FakePtr<float>(scanline_data);
-			scanline2 = scanline + result.w;
+				scanline = new float[129];
+			scanline2 = result.w;
 			y = off_y;
 			e[n].y0 = (float)(off_y + result.h) + 1;
 			while (j < result.h)
@@ -226,8 +225,9 @@ namespace StbTrueTypeSharp
 				var scan_y_top = y + 0.0f;
 				var scan_y_bottom = y + 1.0f;
 				var step = active;
-				scanline.memset(0, result.w);
-				scanline2.memset(0, result.w + 1);
+
+				Array.Clear(scanline, 0, result.w);
+				Array.Clear(scanline, scanline2, result.w + 1);
 
 				stbtt__active_edge oldStep = null;
 				while (step != null)
@@ -284,7 +284,7 @@ namespace StbTrueTypeSharp
 					{
 						float k = 0;
 						var m = 0;
-						sum += scanline2[i];
+						sum += scanline[scanline2 + i];
 						k = scanline[i] + sum;
 						k = (float)Math.Abs((double)k) * 255 + 0.5f;
 						m = (int)k;
