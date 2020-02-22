@@ -73,7 +73,6 @@ namespace StbTrueTypeSharp
 			stbtt__csctx_v(ctx, STBTT_vcubic, (int) ctx.x, (int) ctx.y, (int) cx1, (int) cy1, (int) cx2, (int) cy2);
 		}
 
-		[StructLayout(LayoutKind.Sequential)]
 		public class stbtt__csctx
 		{
 			public int bounds;

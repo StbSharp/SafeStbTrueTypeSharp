@@ -190,7 +190,6 @@ namespace StbTrueTypeSharp
 			return stbtt__cff_index_get(idx, n);
 		}
 
-		[StructLayout(LayoutKind.Sequential)]
 		public class stbtt__buf
 		{
 			public int cursor;
