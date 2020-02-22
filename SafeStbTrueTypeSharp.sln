@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StbSharp", "StbSharp", "{31
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StbTrueTypeSharp.MonoGame.Test", "samples\StbTrueTypeSharp.MonoGame.Test\StbTrueTypeSharp.MonoGame.Test.csproj", "{5528B473-7EEA-43EF-8DE2-6338C5F157D2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SafeStbTrueTypeSharp", "src\StbTrueTypeSharp\SafeStbTrueTypeSharp.csproj", "{B185B747-2A52-496F-83A3-94E3814963D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SafeStbTrueTypeSharp", "src\SafeStbTrueTypeSharp.csproj", "{B185B747-2A52-496F-83A3-94E3814963D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
