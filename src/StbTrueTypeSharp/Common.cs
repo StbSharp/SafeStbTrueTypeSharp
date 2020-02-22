@@ -69,14 +69,6 @@ namespace StbTrueTypeSharp
 		public const int STBTT_MAC_LANG_CHINESE_TRAD = 19;
 
 		[StructLayout(LayoutKind.Sequential)]
-		public class stbtt__buf
-		{
-			public FakePtr<byte> data;
-			public int cursor;
-			public int size;
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
 		public struct stbtt_bakedchar
 		{
 			public ushort x0;
@@ -105,62 +97,39 @@ namespace StbTrueTypeSharp
 		public class stbtt_packedchar
 		{
 			public ushort x0;
-			public ushort y0;
 			public ushort x1;
-			public ushort y1;
-			public float xoff;
-			public float yoff;
 			public float xadvance;
+			public float xoff;
 			public float xoff2;
+			public ushort y0;
+			public ushort y1;
+			public float yoff;
 			public float yoff2;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
 		public class stbtt_pack_range
 		{
-			public float font_size;
-			public int first_unicode_codepoint_in_range;
 			public int[] array_of_unicode_codepoints;
-			public int num_chars;
 			public stbtt_packedchar[] chardata_for_range;
+			public int first_unicode_codepoint_in_range;
+			public float font_size;
 			public byte h_oversample;
+			public int num_chars;
 			public byte v_oversample;
 		}
 
 		public class stbtt_pack_context
 		{
-			public int width;
-			public int height;
-			public int stride_in_bytes;
-			public int padding;
-			public int skip_missing;
 			public uint h_oversample;
-			public uint v_oversample;
-			public FakePtr<byte> pixels;
+			public int height;
 			public stbrp_context pack_info;
-		}
-
-		public class stbtt_fontinfo
-		{
-			public FakePtr<byte> data;
-			public int fontstart;
-			public int numGlyphs;
-			public int loca;
-			public int head;
-			public int glyf;
-			public int hhea;
-			public int hmtx;
-			public int kern;
-			public int gpos;
-			public int svg;
-			public int index_map;
-			public int indexToLocFormat;
-			public stbtt__buf cff = new stbtt__buf();
-			public stbtt__buf charstrings = new stbtt__buf();
-			public stbtt__buf gsubrs = new stbtt__buf();
-			public stbtt__buf subrs = new stbtt__buf();
-			public stbtt__buf fontdicts = new stbtt__buf();
-			public stbtt__buf fdselect = new stbtt__buf();
+			public int padding;
+			public FakePtr<byte> pixels;
+			public int skip_missing;
+			public int stride_in_bytes;
+			public uint v_oversample;
+			public int width;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
@@ -185,51 +154,25 @@ namespace StbTrueTypeSharp
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-		public class stbtt__bitmap
-		{
-			public int w;
-			public int h;
-			public int stride;
-			public FakePtr<byte> pixels;
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		public class stbtt__csctx
-		{
-			public int bounds;
-			public int started;
-			public float first_x;
-			public float first_y;
-			public float x;
-			public float y;
-			public int min_x;
-			public int max_x;
-			public int min_y;
-			public int max_y;
-			public stbtt_vertex[] pvertices;
-			public int num_vertices;
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
 		public class stbtt__edge
 		{
-			public float x0;
-			public float y0;
-			public float x1;
-			public float y1;
 			public int invert;
+			public float x0;
+			public float x1;
+			public float y0;
+			public float y1;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
 		public class stbtt__active_edge
 		{
-			public stbtt__active_edge next;
-			public float fx;
+			public float direction;
+			public float ey;
 			public float fdx;
 			public float fdy;
-			public float direction;
+			public float fx;
+			public stbtt__active_edge next;
 			public float sy;
-			public float ey;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
@@ -242,22 +185,22 @@ namespace StbTrueTypeSharp
 		[StructLayout(LayoutKind.Sequential)]
 		public class stbrp_context
 		{
-			public int width;
+			public int bottom_y;
 			public int height;
+			public int width;
 			public int x;
 			public int y;
-			public int bottom_y;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
 		public class stbrp_rect
 		{
-			public int x;
-			public int y;
+			public int h;
 			public int id;
 			public int w;
-			public int h;
 			public int was_packed;
+			public int x;
+			public int y;
 		}
 
 		public static uint stbtt__find_table(FakePtr<byte> data, uint fontstart, string tag)
@@ -267,9 +210,9 @@ namespace StbTrueTypeSharp
 			int i;
 			for (i = 0; i < num_tables; ++i)
 			{
-				var loc = (uint)(tabledir + 16 * i);
+				var loc = (uint) (tabledir + 16 * i);
 				if ((data + loc + 0)[0] == tag[0] && (data + loc + 0)[1] == tag[1] &&
-					(data + loc + 0)[2] == tag[2] && (data + loc + 0)[3] == tag[3])
+				    (data + loc + 0)[2] == tag[2] && (data + loc + 0)[3] == tag[3])
 					return ttULONG(data + loc + 8);
 			}
 
@@ -278,519 +221,527 @@ namespace StbTrueTypeSharp
 
 		public static ushort ttUSHORT(FakePtr<byte> p)
 		{
-			return (ushort)(p[0] * 256 + p[1]);
+			return (ushort) (p[0] * 256 + p[1]);
 		}
 
 		public static short ttSHORT(FakePtr<byte> p)
 		{
-			return (short)(p[0] * 256 + p[1]);
+			return (short) (p[0] * 256 + p[1]);
 		}
 
 		public static uint ttULONG(FakePtr<byte> p)
 		{
-			return (uint)((p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
+			return (uint) ((p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
 		}
 
 		public static int ttLONG(FakePtr<byte> p)
 		{
-			return (int)((p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
+			return (p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3];
 		}
 
 		public static int stbtt__isfont(FakePtr<byte> font)
 		{
-			if (((((((font)[0]) == ('1')) && (((font)[1]) == (0))) && (((font)[2]) == (0))) && (((font)[3]) == (0))))
-				return (int)(1);
-			if (((((((font)[0]) == ("typ1"[0])) && (((font)[1]) == ("typ1"[1]))) && (((font)[2]) == ("typ1"[2]))) && (((font)[3]) == ("typ1"[3]))))
-				return (int)(1);
-			if (((((((font)[0]) == ("OTTO"[0])) && (((font)[1]) == ("OTTO"[1]))) && (((font)[2]) == ("OTTO"[2]))) && (((font)[3]) == ("OTTO"[3]))))
-				return (int)(1);
-			if (((((((font)[0]) == (0)) && (((font)[1]) == (1))) && (((font)[2]) == (0))) && (((font)[3]) == (0))))
-				return (int)(1);
-			if (((((((font)[0]) == ("true"[0])) && (((font)[1]) == ("true"[1]))) && (((font)[2]) == ("true"[2]))) && (((font)[3]) == ("true"[3]))))
-				return (int)(1);
-			return (int)(0);
+			if (font[0] == '1' && font[1] == 0 && font[2] == 0 && font[3] == 0)
+				return 1;
+			if (font[0] == "typ1"[0] && font[1] == "typ1"[1] && font[2] == "typ1"[2] && font[3] == "typ1"[3])
+				return 1;
+			if (font[0] == "OTTO"[0] && font[1] == "OTTO"[1] && font[2] == "OTTO"[2] && font[3] == "OTTO"[3])
+				return 1;
+			if (font[0] == 0 && font[1] == 1 && font[2] == 0 && font[3] == 0)
+				return 1;
+			if (font[0] == "true"[0] && font[1] == "true"[1] && font[2] == "true"[2] && font[3] == "true"[3])
+				return 1;
+			return 0;
 		}
 
 		public static int stbtt_GetFontOffsetForIndex_internal(FakePtr<byte> font_collection, int index)
 		{
-			if ((stbtt__isfont(font_collection)) != 0)
-				return (int)((index) == (0) ? 0 : -1);
-			if (((((((font_collection)[0]) == ("ttcf"[0])) && (((font_collection)[1]) == ("ttcf"[1]))) && (((font_collection)[2]) == ("ttcf"[2]))) && (((font_collection)[3]) == ("ttcf"[3]))))
-			{
-				if (((ttULONG(font_collection + 4)) == (0x00010000)) || ((ttULONG(font_collection + 4)) == (0x00020000)))
+			if (stbtt__isfont(font_collection) != 0)
+				return index == 0 ? 0 : -1;
+			if (font_collection[0] == "ttcf"[0] && font_collection[1] == "ttcf"[1] && font_collection[2] == "ttcf"[2] &&
+			    font_collection[3] == "ttcf"[3])
+				if (ttULONG(font_collection + 4) == 0x00010000 || ttULONG(font_collection + 4) == 0x00020000)
 				{
-					int n = (int)(ttLONG(font_collection + 8));
-					if ((index) >= (n))
-						return (int)(-1);
-					return (int)(ttULONG(font_collection + 12 + index * 4));
+					var n = ttLONG(font_collection + 8);
+					if (index >= n)
+						return -1;
+					return (int) ttULONG(font_collection + 12 + index * 4);
 				}
-			}
 
-			return (int)(-1);
+			return -1;
 		}
 
 		public static int stbtt_GetNumberOfFonts_internal(FakePtr<byte> font_collection)
 		{
-			if ((stbtt__isfont(font_collection)) != 0)
-				return (int)(1);
-			if (((((((font_collection)[0]) == ("ttcf"[0])) && (((font_collection)[1]) == ("ttcf"[1]))) && (((font_collection)[2]) == ("ttcf"[2]))) && (((font_collection)[3]) == ("ttcf"[3]))))
-			{
-				if (((ttULONG(font_collection + 4)) == (0x00010000)) || ((ttULONG(font_collection + 4)) == (0x00020000)))
-				{
-					return (int)(ttLONG(font_collection + 8));
-				}
-			}
+			if (stbtt__isfont(font_collection) != 0)
+				return 1;
+			if (font_collection[0] == "ttcf"[0] && font_collection[1] == "ttcf"[1] && font_collection[2] == "ttcf"[2] &&
+			    font_collection[3] == "ttcf"[3])
+				if (ttULONG(font_collection + 4) == 0x00010000 || ttULONG(font_collection + 4) == 0x00020000)
+					return ttLONG(font_collection + 8);
 
-			return (int)(0);
+			return 0;
 		}
 
 		public static void stbtt_setvertex(ref stbtt_vertex v, byte type, int x, int y, int cx, int cy)
 		{
-			v.type = (byte)(type);
-			v.x = ((short)(x));
-			v.y = ((short)(y));
-			v.cx = ((short)(cx));
-			v.cy = ((short)(cy));
+			v.type = type;
+			v.x = (short) x;
+			v.y = (short) y;
+			v.cx = (short) cx;
+			v.cy = (short) cy;
 		}
 
-		public static int stbtt__close_shape(stbtt_vertex[] vertices, int num_vertices, int was_off, int start_off, int sx, int sy, int scx, int scy, int cx, int cy)
+		public static int stbtt__close_shape(stbtt_vertex[] vertices, int num_vertices, int was_off, int start_off,
+			int sx, int sy, int scx, int scy, int cx, int cy)
 		{
-			stbtt_vertex v = new stbtt_vertex();
-			if ((start_off) != 0)
+			var v = new stbtt_vertex();
+			if (start_off != 0)
 			{
-				if ((was_off) != 0)
+				if (was_off != 0)
 				{
-					stbtt_setvertex(ref v, (byte)(STBTT_vcurve), (int)((cx + scx) >> 1), (int)((cy + scy) >> 1), (int)(cx), (int)(cy));
+					stbtt_setvertex(ref v, STBTT_vcurve, (cx + scx) >> 1, (cy + scy) >> 1, cx, cy);
 					vertices[num_vertices++] = v;
 				}
 
-				stbtt_setvertex(ref v, (byte)(STBTT_vcurve), (int)(sx), (int)(sy), (int)(scx), (int)(scy));
+				stbtt_setvertex(ref v, STBTT_vcurve, sx, sy, scx, scy);
 				vertices[num_vertices++] = v;
 			}
 			else
 			{
-				if ((was_off) != 0)
+				if (was_off != 0)
 				{
-					stbtt_setvertex(ref v, (byte)(STBTT_vcurve), (int)(sx), (int)(sy), (int)(cx), (int)(cy));
+					stbtt_setvertex(ref v, STBTT_vcurve, sx, sy, cx, cy);
 					vertices[num_vertices++] = v;
 				}
 				else
 				{
-					stbtt_setvertex(ref v, (byte)(STBTT_vline), (int)(sx), (int)(sy), (int)(0), (int)(0));
+					stbtt_setvertex(ref v, STBTT_vline, sx, sy, 0, 0);
 					vertices[num_vertices++] = v;
 				}
 			}
 
-			return (int)(num_vertices);
+			return num_vertices;
 		}
 
 		public static int stbtt__GetCoverageIndex(FakePtr<byte> coverageTable, int glyph)
 		{
-			ushort coverageFormat = (ushort)(ttUSHORT(coverageTable));
+			var coverageFormat = ttUSHORT(coverageTable);
 			switch (coverageFormat)
 			{
 				case 1:
 				{
-					ushort glyphCount = (ushort)(ttUSHORT(coverageTable + 2));
-					int l = (int)(0);
-					int r = (int)(glyphCount - 1);
-					int m = 0;
-					int straw = 0;
-					int needle = (int)(glyph);
+					var glyphCount = ttUSHORT(coverageTable + 2);
+					var l = 0;
+					var r = glyphCount - 1;
+					var m = 0;
+					var straw = 0;
+					var needle = glyph;
 					while (l <= r)
 					{
-						FakePtr<byte> glyphArray = coverageTable + 4;
+						var glyphArray = coverageTable + 4;
 						ushort glyphID = 0;
-						m = (int)((l + r) >> 1);
-						glyphID = (ushort)(ttUSHORT(glyphArray + 2 * m));
-						straw = (int)(glyphID);
-						if ((needle) < (straw))
-							r = (int)(m - 1);
-						else if ((needle) > (straw))
-							l = (int)(m + 1);
+						m = (l + r) >> 1;
+						glyphID = ttUSHORT(glyphArray + 2 * m);
+						straw = glyphID;
+						if (needle < straw)
+							r = m - 1;
+						else if (needle > straw)
+							l = m + 1;
 						else
-						{
-							return (int)(m);
-						}
+							return m;
 					}
 				}
-				break;
+					break;
 				case 2:
 				{
-					ushort rangeCount = (ushort)(ttUSHORT(coverageTable + 2));
-					FakePtr<byte> rangeArray = coverageTable + 4;
-					int l = (int)(0);
-					int r = (int)(rangeCount - 1);
-					int m = 0;
-					int strawStart = 0;
-					int strawEnd = 0;
-					int needle = (int)(glyph);
+					var rangeCount = ttUSHORT(coverageTable + 2);
+					var rangeArray = coverageTable + 4;
+					var l = 0;
+					var r = rangeCount - 1;
+					var m = 0;
+					var strawStart = 0;
+					var strawEnd = 0;
+					var needle = glyph;
 					while (l <= r)
 					{
 						FakePtr<byte> rangeRecord;
-						m = (int)((l + r) >> 1);
+						m = (l + r) >> 1;
 						rangeRecord = rangeArray + 6 * m;
-						strawStart = (int)(ttUSHORT(rangeRecord));
-						strawEnd = (int)(ttUSHORT(rangeRecord + 2));
-						if ((needle) < (strawStart))
-							r = (int)(m - 1);
-						else if ((needle) > (strawEnd))
-							l = (int)(m + 1);
+						strawStart = ttUSHORT(rangeRecord);
+						strawEnd = ttUSHORT(rangeRecord + 2);
+						if (needle < strawStart)
+						{
+							r = m - 1;
+						}
+						else if (needle > strawEnd)
+						{
+							l = m + 1;
+						}
 						else
 						{
-							ushort startCoverageIndex = (ushort)(ttUSHORT(rangeRecord + 4));
-							return (int)(startCoverageIndex + glyph - strawStart);
+							var startCoverageIndex = ttUSHORT(rangeRecord + 4);
+							return startCoverageIndex + glyph - strawStart;
 						}
 					}
 				}
-				break;
+					break;
 				default:
 				{
 				}
-				break;
+					break;
 			}
 
-			return (int)(-1);
+			return -1;
 		}
 
 		public static int stbtt__GetGlyphClass(FakePtr<byte> classDefTable, int glyph)
 		{
-			ushort classDefFormat = (ushort)(ttUSHORT(classDefTable));
+			var classDefFormat = ttUSHORT(classDefTable);
 			switch (classDefFormat)
 			{
 				case 1:
 				{
-					ushort startGlyphID = (ushort)(ttUSHORT(classDefTable + 2));
-					ushort glyphCount = (ushort)(ttUSHORT(classDefTable + 4));
-					FakePtr<byte> classDef1ValueArray = classDefTable + 6;
-					if (((glyph) >= (startGlyphID)) && ((glyph) < (startGlyphID + glyphCount)))
-						return (int)(ttUSHORT(classDef1ValueArray + 2 * (glyph - startGlyphID)));
+					var startGlyphID = ttUSHORT(classDefTable + 2);
+					var glyphCount = ttUSHORT(classDefTable + 4);
+					var classDef1ValueArray = classDefTable + 6;
+					if (glyph >= startGlyphID && glyph < startGlyphID + glyphCount)
+						return ttUSHORT(classDef1ValueArray + 2 * (glyph - startGlyphID));
 					classDefTable = classDef1ValueArray + 2 * glyphCount;
 				}
-				break;
+					break;
 				case 2:
 				{
-					ushort classRangeCount = (ushort)(ttUSHORT(classDefTable + 2));
-					FakePtr<byte> classRangeRecords = classDefTable + 4;
-					int l = (int)(0);
-					int r = (int)(classRangeCount - 1);
-					int m = 0;
-					int strawStart = 0;
-					int strawEnd = 0;
-					int needle = (int)(glyph);
+					var classRangeCount = ttUSHORT(classDefTable + 2);
+					var classRangeRecords = classDefTable + 4;
+					var l = 0;
+					var r = classRangeCount - 1;
+					var m = 0;
+					var strawStart = 0;
+					var strawEnd = 0;
+					var needle = glyph;
 					while (l <= r)
 					{
 						FakePtr<byte> classRangeRecord;
-						m = (int)((l + r) >> 1);
+						m = (l + r) >> 1;
 						classRangeRecord = classRangeRecords + 6 * m;
-						strawStart = (int)(ttUSHORT(classRangeRecord));
-						strawEnd = (int)(ttUSHORT(classRangeRecord + 2));
-						if ((needle) < (strawStart))
-							r = (int)(m - 1);
-						else if ((needle) > (strawEnd))
-							l = (int)(m + 1);
+						strawStart = ttUSHORT(classRangeRecord);
+						strawEnd = ttUSHORT(classRangeRecord + 2);
+						if (needle < strawStart)
+							r = m - 1;
+						else if (needle > strawEnd)
+							l = m + 1;
 						else
-							return (int)(ttUSHORT(classRangeRecord + 4));
+							return ttUSHORT(classRangeRecord + 4);
 					}
+
 					classDefTable = classRangeRecords + 6 * classRangeCount;
 				}
-				break;
+					break;
 				default:
 				{
 				}
-				break;
+					break;
 			}
 
-			return (int)(-1);
+			return -1;
 		}
 
 		public static stbtt__active_edge stbtt__new_active(stbtt__edge e, int off_x, float start_point)
 		{
 			var z = new stbtt__active_edge();
-			float dxdy = (float)((e.x1 - e.x0) / (e.y1 - e.y0));
-			z.fdx = (float)(dxdy);
-			z.fdy = (float)(dxdy != 0.0f ? (1.0f / dxdy) : 0.0f);
-			z.fx = (float)(e.x0 + dxdy * (start_point - e.y0));
-			z.fx -= (float)(off_x);
-			z.direction = (float)((e.invert) != 0 ? 1.0f : -1.0f);
-			z.sy = (float)(e.y0);
-			z.ey = (float)(e.y1);
+			var dxdy = (e.x1 - e.x0) / (e.y1 - e.y0);
+			z.fdx = dxdy;
+			z.fdy = dxdy != 0.0f ? 1.0f / dxdy : 0.0f;
+			z.fx = e.x0 + dxdy * (start_point - e.y0);
+			z.fx -= off_x;
+			z.direction = e.invert != 0 ? 1.0f : -1.0f;
+			z.sy = e.y0;
+			z.ey = e.y1;
 			z.next = null;
 			return z;
 		}
 
-		public static void stbtt__handle_clipped_edge(FakePtr<float> scanline, int x, stbtt__active_edge e, float x0, float y0, float x1, float y1)
+		public static void stbtt__handle_clipped_edge(FakePtr<float> scanline, int x, stbtt__active_edge e, float x0,
+			float y0, float x1, float y1)
 		{
-			if ((y0) == (y1))
+			if (y0 == y1)
 				return;
-			if ((y0) > (e.ey))
+			if (y0 > e.ey)
 				return;
-			if ((y1) < (e.sy))
+			if (y1 < e.sy)
 				return;
-			if ((y0) < (e.sy))
+			if (y0 < e.sy)
 			{
-				x0 += (float)((x1 - x0) * (e.sy - y0) / (y1 - y0));
-				y0 = (float)(e.sy);
+				x0 += (x1 - x0) * (e.sy - y0) / (y1 - y0);
+				y0 = e.sy;
 			}
 
-			if ((y1) > (e.ey))
+			if (y1 > e.ey)
 			{
-				x1 += (float)((x1 - x0) * (e.ey - y1) / (y1 - y0));
-				y1 = (float)(e.ey);
+				x1 += (x1 - x0) * (e.ey - y1) / (y1 - y0);
+				y1 = e.ey;
 			}
 
-			if ((x0 <= x) && (x1 <= x))
+			if (x0 <= x && x1 <= x)
 			{
-				scanline[x] += (float)(e.direction * (y1 - y0));
+				scanline[x] += e.direction * (y1 - y0);
 			}
-			else if (((x0) >= (x + 1)) && ((x1) >= (x + 1)))
+			else if (x0 >= x + 1 && x1 >= x + 1)
 			{
 			}
 			else
 			{
-				scanline[x] += (float)(e.direction * (y1 - y0) * (1 - ((x0 - x) + (x1 - x)) / 2));
+				scanline[x] += e.direction * (y1 - y0) * (1 - (x0 - x + (x1 - x)) / 2);
 			}
-
 		}
 
-		public static void stbtt__fill_active_edges_new(FakePtr<float> scanline, FakePtr<float> scanline_fill, int len, stbtt__active_edge e, float y_top)
+		public static void stbtt__fill_active_edges_new(FakePtr<float> scanline, FakePtr<float> scanline_fill, int len,
+			stbtt__active_edge e, float y_top)
 		{
-			float y_bottom = (float)(y_top + 1);
-			while ((e) != null)
+			var y_bottom = y_top + 1;
+			while (e != null)
 			{
-				if ((e.fdx) == (0))
+				if (e.fdx == 0)
 				{
-					float x0 = (float)(e.fx);
-					if ((x0) < (len))
+					var x0 = e.fx;
+					if (x0 < len)
 					{
-						if ((x0) >= (0))
+						if (x0 >= 0)
 						{
-							stbtt__handle_clipped_edge(scanline, (int)(x0), e, (float)(x0), (float)(y_top), (float)(x0), (float)(y_bottom));
-							stbtt__handle_clipped_edge(scanline_fill - 1, (int)((int)(x0) + 1), e, (float)(x0), (float)(y_top), (float)(x0), (float)(y_bottom));
+							stbtt__handle_clipped_edge(scanline, (int) x0, e, x0, y_top, x0, y_bottom);
+							stbtt__handle_clipped_edge(scanline_fill - 1, (int) x0 + 1, e, x0, y_top, x0, y_bottom);
 						}
 						else
 						{
-							stbtt__handle_clipped_edge(scanline_fill - 1, (int)(0), e, (float)(x0), (float)(y_top), (float)(x0), (float)(y_bottom));
+							stbtt__handle_clipped_edge(scanline_fill - 1, 0, e, x0, y_top, x0, y_bottom);
 						}
 					}
 				}
 				else
 				{
-					float x0 = (float)(e.fx);
-					float dx = (float)(e.fdx);
-					float xb = (float)(x0 + dx);
+					var x0 = e.fx;
+					var dx = e.fdx;
+					var xb = x0 + dx;
 					float x_top = 0;
 					float x_bottom = 0;
 					float sy0 = 0;
 					float sy1 = 0;
-					float dy = (float)(e.fdy);
-					if ((e.sy) > (y_top))
+					var dy = e.fdy;
+					if (e.sy > y_top)
 					{
-						x_top = (float)(x0 + dx * (e.sy - y_top));
-						sy0 = (float)(e.sy);
+						x_top = x0 + dx * (e.sy - y_top);
+						sy0 = e.sy;
 					}
 					else
 					{
-						x_top = (float)(x0);
-						sy0 = (float)(y_top);
+						x_top = x0;
+						sy0 = y_top;
 					}
-					if ((e.ey) < (y_bottom))
+
+					if (e.ey < y_bottom)
 					{
-						x_bottom = (float)(x0 + dx * (e.ey - y_top));
-						sy1 = (float)(e.ey);
+						x_bottom = x0 + dx * (e.ey - y_top);
+						sy1 = e.ey;
 					}
 					else
 					{
-						x_bottom = (float)(xb);
-						sy1 = (float)(y_bottom);
+						x_bottom = xb;
+						sy1 = y_bottom;
 					}
-					if (((((x_top) >= (0)) && ((x_bottom) >= (0))) && ((x_top) < (len))) && ((x_bottom) < (len)))
+
+					if (x_top >= 0 && x_bottom >= 0 && x_top < len && x_bottom < len)
 					{
-						if (((int)(x_top)) == ((int)(x_bottom)))
+						if ((int) x_top == (int) x_bottom)
 						{
 							float height = 0;
-							int x = (int)(x_top);
-							height = (float)(sy1 - sy0);
-							scanline[x] += (float)(e.direction * (1 - ((x_top - x) + (x_bottom - x)) / 2) * height);
-							scanline_fill[x] += (float)(e.direction * height);
+							var x = (int) x_top;
+							height = sy1 - sy0;
+							scanline[x] += e.direction * (1 - (x_top - x + (x_bottom - x)) / 2) * height;
+							scanline_fill[x] += e.direction * height;
 						}
 						else
 						{
-							int x = 0;
-							int x1 = 0;
-							int x2 = 0;
+							var x = 0;
+							var x1 = 0;
+							var x2 = 0;
 							float y_crossing = 0;
 							float step = 0;
 							float sign = 0;
 							float area = 0;
-							if ((x_top) > (x_bottom))
+							if (x_top > x_bottom)
 							{
 								float t = 0;
-								sy0 = (float)(y_bottom - (sy0 - y_top));
-								sy1 = (float)(y_bottom - (sy1 - y_top));
-								t = (float)(sy0);
-								sy0 = (float)(sy1);
-								sy1 = (float)(t);
-								t = (float)(x_bottom);
-								x_bottom = (float)(x_top);
-								x_top = (float)(t);
-								dx = (float)(-dx);
-								dy = (float)(-dy);
-								t = (float)(x0);
-								x0 = (float)(xb);
-								xb = (float)(t);
+								sy0 = y_bottom - (sy0 - y_top);
+								sy1 = y_bottom - (sy1 - y_top);
+								t = sy0;
+								sy0 = sy1;
+								sy1 = t;
+								t = x_bottom;
+								x_bottom = x_top;
+								x_top = t;
+								dx = -dx;
+								dy = -dy;
+								t = x0;
+								x0 = xb;
+								xb = t;
 							}
-							x1 = ((int)(x_top));
-							x2 = ((int)(x_bottom));
-							y_crossing = (float)((x1 + 1 - x0) * dy + y_top);
-							sign = (float)(e.direction);
-							area = (float)(sign * (y_crossing - sy0));
-							scanline[x1] += (float)(area * (1 - ((x_top - x1) + (x1 + 1 - x1)) / 2));
-							step = (float)(sign * dy);
-							for (x = (int)(x1 + 1); (x) < (x2); ++x)
+
+							x1 = (int) x_top;
+							x2 = (int) x_bottom;
+							y_crossing = (x1 + 1 - x0) * dy + y_top;
+							sign = e.direction;
+							area = sign * (y_crossing - sy0);
+							scanline[x1] += area * (1 - (x_top - x1 + (x1 + 1 - x1)) / 2);
+							step = sign * dy;
+							for (x = x1 + 1; x < x2; ++x)
 							{
-								scanline[x] += (float)(area + step / 2);
-								area += (float)(step);
+								scanline[x] += area + step / 2;
+								area += step;
 							}
-							y_crossing += (float)(dy * (x2 - (x1 + 1)));
-							scanline[x2] += (float)(area + sign * (1 - ((x2 - x2) + (x_bottom - x2)) / 2) * (sy1 - y_crossing));
-							scanline_fill[x2] += (float)(sign * (sy1 - sy0));
+
+							y_crossing += dy * (x2 - (x1 + 1));
+							scanline[x2] += area + sign * (1 - (x2 - x2 + (x_bottom - x2)) / 2) * (sy1 - y_crossing);
+							scanline_fill[x2] += sign * (sy1 - sy0);
 						}
 					}
 					else
 					{
-						int x = 0;
-						for (x = (int)(0); (x) < (len); ++x)
+						var x = 0;
+						for (x = 0; x < len; ++x)
 						{
-							float y0 = (float)(y_top);
-							float x1 = (float)(x);
-							float x2 = (float)(x + 1);
-							float x3 = (float)(xb);
-							float y3 = (float)(y_bottom);
-							float y1 = (float)((x - x0) / dx + y_top);
-							float y2 = (float)((x + 1 - x0) / dx + y_top);
-							if (((x0) < (x1)) && ((x3) > (x2)))
+							var y0 = y_top;
+							var x1 = (float) x;
+							var x2 = (float) (x + 1);
+							var x3 = xb;
+							var y3 = y_bottom;
+							var y1 = (x - x0) / dx + y_top;
+							var y2 = (x + 1 - x0) / dx + y_top;
+							if (x0 < x1 && x3 > x2)
 							{
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x0), (float)(y0), (float)(x1), (float)(y1));
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x1), (float)(y1), (float)(x2), (float)(y2));
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x2), (float)(y2), (float)(x3), (float)(y3));
+								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x1, y1);
+								stbtt__handle_clipped_edge(scanline, x, e, x1, y1, x2, y2);
+								stbtt__handle_clipped_edge(scanline, x, e, x2, y2, x3, y3);
 							}
-							else if (((x3) < (x1)) && ((x0) > (x2)))
+							else if (x3 < x1 && x0 > x2)
 							{
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x0), (float)(y0), (float)(x2), (float)(y2));
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x2), (float)(y2), (float)(x1), (float)(y1));
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x1), (float)(y1), (float)(x3), (float)(y3));
+								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x2, y2);
+								stbtt__handle_clipped_edge(scanline, x, e, x2, y2, x1, y1);
+								stbtt__handle_clipped_edge(scanline, x, e, x1, y1, x3, y3);
 							}
-							else if (((x0) < (x1)) && ((x3) > (x1)))
+							else if (x0 < x1 && x3 > x1)
 							{
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x0), (float)(y0), (float)(x1), (float)(y1));
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x1), (float)(y1), (float)(x3), (float)(y3));
+								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x1, y1);
+								stbtt__handle_clipped_edge(scanline, x, e, x1, y1, x3, y3);
 							}
-							else if (((x3) < (x1)) && ((x0) > (x1)))
+							else if (x3 < x1 && x0 > x1)
 							{
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x0), (float)(y0), (float)(x1), (float)(y1));
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x1), (float)(y1), (float)(x3), (float)(y3));
+								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x1, y1);
+								stbtt__handle_clipped_edge(scanline, x, e, x1, y1, x3, y3);
 							}
-							else if (((x0) < (x2)) && ((x3) > (x2)))
+							else if (x0 < x2 && x3 > x2)
 							{
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x0), (float)(y0), (float)(x2), (float)(y2));
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x2), (float)(y2), (float)(x3), (float)(y3));
+								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x2, y2);
+								stbtt__handle_clipped_edge(scanline, x, e, x2, y2, x3, y3);
 							}
-							else if (((x3) < (x2)) && ((x0) > (x2)))
+							else if (x3 < x2 && x0 > x2)
 							{
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x0), (float)(y0), (float)(x2), (float)(y2));
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x2), (float)(y2), (float)(x3), (float)(y3));
+								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x2, y2);
+								stbtt__handle_clipped_edge(scanline, x, e, x2, y2, x3, y3);
 							}
 							else
 							{
-								stbtt__handle_clipped_edge(scanline, (int)(x), e, (float)(x0), (float)(y0), (float)(x3), (float)(y3));
+								stbtt__handle_clipped_edge(scanline, x, e, x0, y0, x3, y3);
 							}
 						}
 					}
 				}
+
 				e = e.next;
 			}
 		}
 
-		public static void stbtt__rasterize_sorted_edges(stbtt__bitmap result, FakePtr<stbtt__edge> e, int n, int vsubsample, int off_x, int off_y)
+		public static void stbtt__rasterize_sorted_edges(stbtt__bitmap result, FakePtr<stbtt__edge> e, int n,
+			int vsubsample, int off_x, int off_y)
 		{
-			stbtt__active_edge active = (null);
-			int y = 0;
-			int j = (int)(0);
-			int i = 0;
-			float[] scanline_data = new float[129];
+			stbtt__active_edge active = null;
+			var y = 0;
+			var j = 0;
+			var i = 0;
+			var scanline_data = new float[129];
 			FakePtr<float> scanline;
 			FakePtr<float> scanline2;
-			if ((result.w) > (64))
+			if (result.w > 64)
 				scanline = FakePtr<float>.CreateWithSize(result.w * 2 + 1);
 			else
 				scanline = new FakePtr<float>(scanline_data);
 			scanline2 = scanline + result.w;
-			y = (int)(off_y);
-			e[n].y0 = (float)((float)(off_y + result.h) + 1);
-			while ((j) < (result.h))
+			y = off_y;
+			e[n].y0 = (float) (off_y + result.h) + 1;
+			while (j < result.h)
 			{
-				float scan_y_top = (float)(y + 0.0f);
-				float scan_y_bottom = (float)(y + 1.0f);
-				stbtt__active_edge step = active;
+				var scan_y_top = y + 0.0f;
+				var scan_y_bottom = y + 1.0f;
+				var step = active;
 				scanline.memset(0, result.w);
 				scanline2.memset(0, result.w + 1);
-				while ((step) != null)
+				while (step != null)
 				{
-					stbtt__active_edge z = step;
+					var z = step;
 					if (z.ey <= scan_y_top)
 					{
 						step = z.next;
-						z.direction = (float)(0);
+						z.direction = 0;
 					}
 					else
 					{
 						step = step.next;
 					}
-				} while (e.Value.y0 <= scan_y_bottom)
+				}
+
+				while (e.Value.y0 <= scan_y_bottom)
 				{
 					if (e.Value.y0 != e.Value.y1)
 					{
-						stbtt__active_edge z = stbtt__new_active(e.Value, (int)(off_x), (float)(scan_y_top));
-						if (z != (null))
+						var z = stbtt__new_active(e.Value, off_x, scan_y_top);
+						if (z != null)
 						{
-							if (((j) == (0)) && (off_y != 0))
-							{
-								if ((z.ey) < (scan_y_top))
-								{
-									z.ey = (float)(scan_y_top);
-								}
-							}
+							if (j == 0 && off_y != 0)
+								if (z.ey < scan_y_top)
+									z.ey = scan_y_top;
 							z.next = active;
 							active = z;
 						}
 					}
+
 					++e;
 				}
-				if ((active) != null)
-					stbtt__fill_active_edges_new(scanline, scanline2 + 1, (int)(result.w), active, (float)(scan_y_top));
+
+				if (active != null)
+					stbtt__fill_active_edges_new(scanline, scanline2 + 1, result.w, active, scan_y_top);
 				{
-					float sum = (float)(0);
-					for (i = (int)(0); (i) < (result.w); ++i)
+					var sum = (float) 0;
+					for (i = 0; i < result.w; ++i)
 					{
 						float k = 0;
-						int m = 0;
-						sum += (float)(scanline2[i]);
-						k = (float)(scanline[i] + sum);
-						k = (float)((float)(Math.Abs((double)(k))) * 255 + 0.5f);
-						m = ((int)(k));
-						if ((m) > (255))
-							m = (int)(255);
-						result.pixels[j * result.stride + i] = ((byte)(m));
+						var m = 0;
+						sum += scanline2[i];
+						k = scanline[i] + sum;
+						k = (float) Math.Abs((double) k) * 255 + 0.5f;
+						m = (int) k;
+						if (m > 255)
+							m = 255;
+						result.pixels[j * result.stride + i] = (byte) m;
 					}
 				}
 				step = active;
-				while ((step) != null)
+				while (step != null)
 				{
-					stbtt__active_edge z = step;
-					z.fx += (float)(z.fdx);
+					var z = step;
+					z.fx += z.fdx;
 					step = step.next;
 				}
+
 				++y;
 				++j;
 			}
@@ -798,420 +749,448 @@ namespace StbTrueTypeSharp
 
 		public static void stbtt__sort_edges_ins_sort(FakePtr<stbtt__edge> p, int n)
 		{
-			int i = 0;
-			int j = 0;
-			for (i = (int)(1); (i) < (n); ++i)
+			var i = 0;
+			var j = 0;
+			for (i = 1; i < n; ++i)
 			{
-				stbtt__edge t = (stbtt__edge)(p[i]);
-				stbtt__edge a = t;
-				j = (int)(i);
-				while ((j) > (0))
+				var t = p[i];
+				var a = t;
+				j = i;
+				while (j > 0)
 				{
-					stbtt__edge b = p[j - 1];
-					int c = (int)(a.y0 < b.y0 ? 1 : 0);
+					var b = p[j - 1];
+					var c = a.y0 < b.y0 ? 1 : 0;
 					if (c == 0)
 						break;
-					p[j] = (stbtt__edge)(p[j - 1]);
+					p[j] = p[j - 1];
 					--j;
 				}
+
 				if (i != j)
-					p[j] = (stbtt__edge)(t);
+					p[j] = t;
 			}
 		}
 
 		public static void stbtt__sort_edges_quicksort(FakePtr<stbtt__edge> p, int n)
 		{
-			while ((n) > (12))
+			while (n > 12)
 			{
-				stbtt__edge t = new stbtt__edge();
-				int c01 = 0;
-				int c12 = 0;
-				int c = 0;
-				int m = 0;
-				int i = 0;
-				int j = 0;
-				m = (int)(n >> 1);
-				c01 = (int)(((p[0]).y0) < ((p[m]).y0) ? 1 : 0);
-				c12 = (int)(((p[m]).y0) < ((p[n - 1]).y0) ? 1 : 0);
+				var t = new stbtt__edge();
+				var c01 = 0;
+				var c12 = 0;
+				var c = 0;
+				var m = 0;
+				var i = 0;
+				var j = 0;
+				m = n >> 1;
+				c01 = p[0].y0 < p[m].y0 ? 1 : 0;
+				c12 = p[m].y0 < p[n - 1].y0 ? 1 : 0;
 				if (c01 != c12)
 				{
-					int z = 0;
-					c = (int)(((p[0]).y0) < ((p[n - 1]).y0) ? 1 : 0);
-					z = (int)(((c) == (c12)) ? 0 : n - 1);
-					t = (stbtt__edge)(p[z]);
-					p[z] = (stbtt__edge)(p[m]);
-					p[m] = (stbtt__edge)(t);
+					var z = 0;
+					c = p[0].y0 < p[n - 1].y0 ? 1 : 0;
+					z = c == c12 ? 0 : n - 1;
+					t = p[z];
+					p[z] = p[m];
+					p[m] = t;
 				}
-				t = (stbtt__edge)(p[0]);
-				p[0] = (stbtt__edge)(p[m]);
-				p[m] = (stbtt__edge)(t);
-				i = (int)(1);
-				j = (int)(n - 1);
-				for (; ; )
+
+				t = p[0];
+				p[0] = p[m];
+				p[m] = t;
+				i = 1;
+				j = n - 1;
+				for (;;)
 				{
-					for (; ; ++i)
-					{
-						if (!(((p[i]).y0) < ((p[0]).y0)))
+					for (;; ++i)
+						if (!(p[i].y0 < p[0].y0))
 							break;
-					}
-					for (; ; --j)
-					{
-						if (!(((p[0]).y0) < ((p[j]).y0)))
+					for (;; --j)
+						if (!(p[0].y0 < p[j].y0))
 							break;
-					}
-					if ((i) >= (j))
+					if (i >= j)
 						break;
-					t = (stbtt__edge)(p[i]);
-					p[i] = (stbtt__edge)(p[j]);
-					p[j] = (stbtt__edge)(t);
+					t = p[i];
+					p[i] = p[j];
+					p[j] = t;
 					++i;
 					--j;
 				}
-				if ((j) < (n - i))
+
+				if (j < n - i)
 				{
-					stbtt__sort_edges_quicksort(p, (int)(j));
+					stbtt__sort_edges_quicksort(p, j);
 					p = p + i;
-					n = (int)(n - i);
+					n = n - i;
 				}
 				else
 				{
-					stbtt__sort_edges_quicksort(p + i, (int)(n - i));
-					n = (int)(j);
+					stbtt__sort_edges_quicksort(p + i, n - i);
+					n = j;
 				}
 			}
 		}
 
 		public static void stbtt__sort_edges(FakePtr<stbtt__edge> p, int n)
 		{
-			stbtt__sort_edges_quicksort(p, (int)(n));
-			stbtt__sort_edges_ins_sort(p, (int)(n));
+			stbtt__sort_edges_quicksort(p, n);
+			stbtt__sort_edges_ins_sort(p, n);
 		}
 
 		public static void stbtt__add_point(stbtt__point[] points, int n, float x, float y)
 		{
 			if (points == null)
 				return;
-			points[n].x = (float)(x);
-			points[n].y = (float)(y);
+			points[n].x = x;
+			points[n].y = y;
 		}
 
-		public static int stbtt__tesselate_curve(stbtt__point[] points, ref int num_points, float x0, float y0, float x1, float y1, float x2, float y2, float objspace_flatness_squared, int n)
+		public static int stbtt__tesselate_curve(stbtt__point[] points, ref int num_points, float x0, float y0,
+			float x1, float y1, float x2, float y2, float objspace_flatness_squared, int n)
 		{
-			float mx = (float)((x0 + 2 * x1 + x2) / 4);
-			float my = (float)((y0 + 2 * y1 + y2) / 4);
-			float dx = (float)((x0 + x2) / 2 - mx);
-			float dy = (float)((y0 + y2) / 2 - my);
-			if ((n) > (16))
-				return (int)(1);
-			if ((dx * dx + dy * dy) > (objspace_flatness_squared))
+			var mx = (x0 + 2 * x1 + x2) / 4;
+			var my = (y0 + 2 * y1 + y2) / 4;
+			var dx = (x0 + x2) / 2 - mx;
+			var dy = (y0 + y2) / 2 - my;
+			if (n > 16)
+				return 1;
+			if (dx * dx + dy * dy > objspace_flatness_squared)
 			{
-				stbtt__tesselate_curve(points, ref num_points, (float)(x0), (float)(y0), (float)((x0 + x1) / 2.0f), (float)((y0 + y1) / 2.0f), (float)(mx), (float)(my), (float)(objspace_flatness_squared), (int)(n + 1));
-				stbtt__tesselate_curve(points, ref num_points, (float)(mx), (float)(my), (float)((x1 + x2) / 2.0f), (float)((y1 + y2) / 2.0f), (float)(x2), (float)(y2), (float)(objspace_flatness_squared), (int)(n + 1));
+				stbtt__tesselate_curve(points, ref num_points, x0, y0, (x0 + x1) / 2.0f, (y0 + y1) / 2.0f, mx, my,
+					objspace_flatness_squared, n + 1);
+				stbtt__tesselate_curve(points, ref num_points, mx, my, (x1 + x2) / 2.0f, (y1 + y2) / 2.0f, x2, y2,
+					objspace_flatness_squared, n + 1);
 			}
 			else
 			{
-				stbtt__add_point(points, num_points, (float)(x2), (float)(y2));
+				stbtt__add_point(points, num_points, x2, y2);
 				num_points++;
 			}
 
-			return (int)(1);
+			return 1;
 		}
 
-		public static void stbtt__tesselate_cubic(stbtt__point[] points, ref int num_points, float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, float objspace_flatness_squared, int n)
+		public static void stbtt__tesselate_cubic(stbtt__point[] points, ref int num_points, float x0, float y0,
+			float x1, float y1, float x2, float y2, float x3, float y3, float objspace_flatness_squared, int n)
 		{
-			float dx0 = (float)(x1 - x0);
-			float dy0 = (float)(y1 - y0);
-			float dx1 = (float)(x2 - x1);
-			float dy1 = (float)(y2 - y1);
-			float dx2 = (float)(x3 - x2);
-			float dy2 = (float)(y3 - y2);
-			float dx = (float)(x3 - x0);
-			float dy = (float)(y3 - y0);
-			float longlen = (float)(Math.Sqrt((double)(dx0 * dx0 + dy0 * dy0)) + Math.Sqrt((double)(dx1 * dx1 + dy1 * dy1)) + Math.Sqrt((double)(dx2 * dx2 + dy2 * dy2)));
-			float shortlen = (float)(Math.Sqrt((double)(dx * dx + dy * dy)));
-			float flatness_squared = (float)(longlen * longlen - shortlen * shortlen);
-			if ((n) > (16))
+			var dx0 = x1 - x0;
+			var dy0 = y1 - y0;
+			var dx1 = x2 - x1;
+			var dy1 = y2 - y1;
+			var dx2 = x3 - x2;
+			var dy2 = y3 - y2;
+			var dx = x3 - x0;
+			var dy = y3 - y0;
+			var longlen = (float) (Math.Sqrt(dx0 * dx0 + dy0 * dy0) + Math.Sqrt(dx1 * dx1 + dy1 * dy1) +
+			                       Math.Sqrt(dx2 * dx2 + dy2 * dy2));
+			var shortlen = (float) Math.Sqrt(dx * dx + dy * dy);
+			var flatness_squared = longlen * longlen - shortlen * shortlen;
+			if (n > 16)
 				return;
-			if ((flatness_squared) > (objspace_flatness_squared))
+			if (flatness_squared > objspace_flatness_squared)
 			{
-				float x01 = (float)((x0 + x1) / 2);
-				float y01 = (float)((y0 + y1) / 2);
-				float x12 = (float)((x1 + x2) / 2);
-				float y12 = (float)((y1 + y2) / 2);
-				float x23 = (float)((x2 + x3) / 2);
-				float y23 = (float)((y2 + y3) / 2);
-				float xa = (float)((x01 + x12) / 2);
-				float ya = (float)((y01 + y12) / 2);
-				float xb = (float)((x12 + x23) / 2);
-				float yb = (float)((y12 + y23) / 2);
-				float mx = (float)((xa + xb) / 2);
-				float my = (float)((ya + yb) / 2);
-				stbtt__tesselate_cubic(points, ref num_points, (float)(x0), (float)(y0), (float)(x01), (float)(y01), (float)(xa), (float)(ya), (float)(mx), (float)(my), (float)(objspace_flatness_squared), (int)(n + 1));
-				stbtt__tesselate_cubic(points, ref num_points, (float)(mx), (float)(my), (float)(xb), (float)(yb), (float)(x23), (float)(y23), (float)(x3), (float)(y3), (float)(objspace_flatness_squared), (int)(n + 1));
+				var x01 = (x0 + x1) / 2;
+				var y01 = (y0 + y1) / 2;
+				var x12 = (x1 + x2) / 2;
+				var y12 = (y1 + y2) / 2;
+				var x23 = (x2 + x3) / 2;
+				var y23 = (y2 + y3) / 2;
+				var xa = (x01 + x12) / 2;
+				var ya = (y01 + y12) / 2;
+				var xb = (x12 + x23) / 2;
+				var yb = (y12 + y23) / 2;
+				var mx = (xa + xb) / 2;
+				var my = (ya + yb) / 2;
+				stbtt__tesselate_cubic(points, ref num_points, x0, y0, x01, y01, xa, ya, mx, my,
+					objspace_flatness_squared, n + 1);
+				stbtt__tesselate_cubic(points, ref num_points, mx, my, xb, yb, x23, y23, x3, y3,
+					objspace_flatness_squared, n + 1);
 			}
 			else
 			{
-				stbtt__add_point(points, num_points, (float)(x3), (float)(y3));
+				stbtt__add_point(points, num_points, x3, y3);
 				num_points++;
 			}
 		}
 
-		public static stbtt__point[] stbtt_FlattenCurves(stbtt_vertex[] vertices, int num_verts, float objspace_flatness, out int[] contour_lengths, out int num_contours)
+		public static stbtt__point[] stbtt_FlattenCurves(stbtt_vertex[] vertices, int num_verts,
+			float objspace_flatness, out int[] contour_lengths, out int num_contours)
 		{
 			stbtt__point[] points = null;
-			int num_points = (int)(0);
-			float objspace_flatness_squared = (float)(objspace_flatness * objspace_flatness);
-			int i = 0;
-			int n = (int)(0);
-			int start = (int)(0);
-			int pass = 0;
-			for (i = (int)(0); (i) < (num_verts); ++i)
-			{ if ((vertices[i].type) == (STBTT_vmove)) ++n; }
-			num_contours = (int)(n);
+			var num_points = 0;
+			var objspace_flatness_squared = objspace_flatness * objspace_flatness;
+			var i = 0;
+			var n = 0;
+			var start = 0;
+			var pass = 0;
+			for (i = 0; i < num_verts; ++i)
+				if (vertices[i].type == STBTT_vmove)
+					++n;
+			num_contours = n;
 			contour_lengths = null;
-			if ((n) == (0))
+			if (n == 0)
 				return null;
 			contour_lengths = new int[n];
 
-			for (pass = (int)(0); (pass) < (2); ++pass)
+			for (pass = 0; pass < 2; ++pass)
 			{
-				float x = (float)(0);
-				float y = (float)(0);
-				if ((pass) == (1))
-				{
-					points = new stbtt__point[num_points];
-				}
-				num_points = (int)(0);
-				n = (int)(-1);
-				for (i = (int)(0); (i) < (num_verts); ++i)
-				{
+				var x = (float) 0;
+				var y = (float) 0;
+				if (pass == 1) points = new stbtt__point[num_points];
+				num_points = 0;
+				n = -1;
+				for (i = 0; i < num_verts; ++i)
 					switch (vertices[i].type)
 					{
 						case STBTT_vmove:
-							if ((n) >= (0))
-								contour_lengths[n] = (int)(num_points - start);
+							if (n >= 0)
+								contour_lengths[n] = num_points - start;
 							++n;
-							start = (int)(num_points);
-							x = (float)(vertices[i].x);
-							y = (float)(vertices[i].y);
-							stbtt__add_point(points, (int)(num_points++), (float)(x), (float)(y));
+							start = num_points;
+							x = vertices[i].x;
+							y = vertices[i].y;
+							stbtt__add_point(points, num_points++, x, y);
 							break;
 						case STBTT_vline:
-							x = (float)(vertices[i].x);
-							y = (float)(vertices[i].y);
-							stbtt__add_point(points, (int)(num_points++), (float)(x), (float)(y));
+							x = vertices[i].x;
+							y = vertices[i].y;
+							stbtt__add_point(points, num_points++, x, y);
 							break;
 						case STBTT_vcurve:
-							stbtt__tesselate_curve(points, ref num_points, (float)(x), (float)(y), (float)(vertices[i].cx), (float)(vertices[i].cy), (float)(vertices[i].x), (float)(vertices[i].y), (float)(objspace_flatness_squared), (int)(0));
-							x = (float)(vertices[i].x);
-							y = (float)(vertices[i].y);
+							stbtt__tesselate_curve(points, ref num_points, x, y, vertices[i].cx, vertices[i].cy,
+								vertices[i].x, vertices[i].y, objspace_flatness_squared, 0);
+							x = vertices[i].x;
+							y = vertices[i].y;
 							break;
 						case STBTT_vcubic:
-							stbtt__tesselate_cubic(points, ref num_points, (float)(x), (float)(y), (float)(vertices[i].cx), (float)(vertices[i].cy), (float)(vertices[i].cx1), (float)(vertices[i].cy1), (float)(vertices[i].x), (float)(vertices[i].y), (float)(objspace_flatness_squared), (int)(0));
-							x = (float)(vertices[i].x);
-							y = (float)(vertices[i].y);
+							stbtt__tesselate_cubic(points, ref num_points, x, y, vertices[i].cx, vertices[i].cy,
+								vertices[i].cx1, vertices[i].cy1, vertices[i].x, vertices[i].y,
+								objspace_flatness_squared, 0);
+							x = vertices[i].x;
+							y = vertices[i].y;
 							break;
 					}
-				} contour_lengths[n] = (int)(num_points - start);
+
+				contour_lengths[n] = num_points - start;
 			}
 
 			return points;
 		}
 
-		public static int stbtt_BakeFontBitmap_internal(byte[] data, int offset, float pixel_height, FakePtr<byte> pixels, int pw, int ph, int first_char, int num_chars, stbtt_bakedchar[] chardata)
+		public static int stbtt_BakeFontBitmap_internal(byte[] data, int offset, float pixel_height,
+			FakePtr<byte> pixels, int pw, int ph, int first_char, int num_chars, stbtt_bakedchar[] chardata)
 		{
 			float scale = 0;
-			int x = 0;
-			int y = 0;
-			int bottom_y = 0;
-			int i = 0;
-			stbtt_fontinfo f = new stbtt_fontinfo();
-			if (stbtt_InitFont(f, data, (int)(offset)) == 0)
-				return (int)(-1);
+			var x = 0;
+			var y = 0;
+			var bottom_y = 0;
+			var i = 0;
+			var f = new stbtt_fontinfo();
+			if (stbtt_InitFont(f, data, offset) == 0)
+				return -1;
 			pixels.memset(0, pw * ph);
-			x = (int)(y = (int)(1));
-			bottom_y = (int)(1);
-			scale = (float)(stbtt_ScaleForPixelHeight(f, (float)(pixel_height)));
-			for (i = (int)(0); (i) < (num_chars); ++i)
+			x = y = 1;
+			bottom_y = 1;
+			scale = stbtt_ScaleForPixelHeight(f, pixel_height);
+			for (i = 0; i < num_chars; ++i)
 			{
-				int advance = 0;
-				int lsb = 0;
-				int x0 = 0;
-				int y0 = 0;
-				int x1 = 0;
-				int y1 = 0;
-				int gw = 0;
-				int gh = 0;
-				int g = (int)(stbtt_FindGlyphIndex(f, (int)(first_char + i)));
-				stbtt_GetGlyphHMetrics(f, (int)(g), ref advance, ref lsb);
-				stbtt_GetGlyphBitmapBox(f, (int)(g), (float)(scale), (float)(scale), ref x0, ref y0, ref x1, ref y1);
-				gw = (int)(x1 - x0);
-				gh = (int)(y1 - y0);
-				if ((x + gw + 1) >= (pw))
+				var advance = 0;
+				var lsb = 0;
+				var x0 = 0;
+				var y0 = 0;
+				var x1 = 0;
+				var y1 = 0;
+				var gw = 0;
+				var gh = 0;
+				var g = stbtt_FindGlyphIndex(f, first_char + i);
+				stbtt_GetGlyphHMetrics(f, g, ref advance, ref lsb);
+				stbtt_GetGlyphBitmapBox(f, g, scale, scale, ref x0, ref y0, ref x1, ref y1);
+				gw = x1 - x0;
+				gh = y1 - y0;
+				if (x + gw + 1 >= pw)
 				{
-					y = (int)(bottom_y);
-					x = (int)(1);
+					y = bottom_y;
+					x = 1;
 				}
-				if ((y + gh + 1) >= (ph))
-					return (int)(-i);
-				stbtt_MakeGlyphBitmap(f, pixels + x + y * pw, (int)(gw), (int)(gh), (int)(pw), (float)(scale), (float)(scale), (int)(g));
-				chardata[i].x0 = (ushort)((short)(x));
-				chardata[i].y0 = (ushort)((short)(y));
-				chardata[i].x1 = (ushort)((short)(x + gw));
-				chardata[i].y1 = (ushort)((short)(y + gh));
-				chardata[i].xadvance = (float)(scale * advance);
-				chardata[i].xoff = ((float)(x0));
-				chardata[i].yoff = ((float)(y0));
-				x = (int)(x + gw + 1);
-				if ((y + gh + 1) > (bottom_y))
-					bottom_y = (int)(y + gh + 1);
+
+				if (y + gh + 1 >= ph)
+					return -i;
+				stbtt_MakeGlyphBitmap(f, pixels + x + y * pw, gw, gh, pw, scale, scale, g);
+				chardata[i].x0 = (ushort) (short) x;
+				chardata[i].y0 = (ushort) (short) y;
+				chardata[i].x1 = (ushort) (short) (x + gw);
+				chardata[i].y1 = (ushort) (short) (y + gh);
+				chardata[i].xadvance = scale * advance;
+				chardata[i].xoff = x0;
+				chardata[i].yoff = y0;
+				x = x + gw + 1;
+				if (y + gh + 1 > bottom_y)
+					bottom_y = y + gh + 1;
 			}
-			return (int)(bottom_y);
+
+			return bottom_y;
 		}
 
-		public static void stbtt_GetBakedQuad(stbtt_bakedchar[] chardata, int pw, int ph, int char_index, ref float xpos, ref float ypos, ref stbtt_aligned_quad q, int opengl_fillrule)
+		public static void stbtt_GetBakedQuad(stbtt_bakedchar[] chardata, int pw, int ph, int char_index,
+			ref float xpos, ref float ypos, ref stbtt_aligned_quad q, int opengl_fillrule)
 		{
-			float d3d_bias = (float)((opengl_fillrule) != 0 ? 0 : -0.5f);
-			float ipw = (float)(1.0f / pw);
-			float iph = (float)(1.0f / ph);
-			int round_x = ((int)(Math.Floor((double)((xpos + chardata[char_index].xoff) + 0.5f))));
-			int round_y = ((int)(Math.Floor((double)((ypos + chardata[char_index].yoff) + 0.5f))));
-			q.x0 = (float)(round_x + d3d_bias);
-			q.y0 = (float)(round_y + d3d_bias);
-			q.x1 = (float)(round_x + chardata[char_index].x1 - chardata[char_index].x0 + d3d_bias);
-			q.y1 = (float)(round_y + chardata[char_index].y1 - chardata[char_index].y0 + d3d_bias);
-			q.s0 = (float)(chardata[char_index].x0 * ipw);
-			q.t0 = (float)(chardata[char_index].y0 * iph);
-			q.s1 = (float)(chardata[char_index].x1 * ipw);
-			q.t1 = (float)(chardata[char_index].y1 * iph);
-			xpos += (float)(chardata[char_index].xadvance);
+			var d3d_bias = opengl_fillrule != 0 ? 0 : -0.5f;
+			var ipw = 1.0f / pw;
+			var iph = 1.0f / ph;
+			var round_x = (int) Math.Floor(xpos + chardata[char_index].xoff + 0.5f);
+			var round_y = (int) Math.Floor(ypos + chardata[char_index].yoff + 0.5f);
+			q.x0 = round_x + d3d_bias;
+			q.y0 = round_y + d3d_bias;
+			q.x1 = round_x + chardata[char_index].x1 - chardata[char_index].x0 + d3d_bias;
+			q.y1 = round_y + chardata[char_index].y1 - chardata[char_index].y0 + d3d_bias;
+			q.s0 = chardata[char_index].x0 * ipw;
+			q.t0 = chardata[char_index].y0 * iph;
+			q.s1 = chardata[char_index].x1 * ipw;
+			q.t1 = chardata[char_index].y1 * iph;
+			xpos += chardata[char_index].xadvance;
 		}
 
-		public static void stbtt__h_prefilter(FakePtr<byte> pixels, int w, int h, int stride_in_bytes, uint kernel_width)
+		public static void stbtt__h_prefilter(FakePtr<byte> pixels, int w, int h, int stride_in_bytes,
+			uint kernel_width)
 		{
-			byte[] buffer = new byte[8];
-			int safe_w = (int)(w - kernel_width);
-			int j = 0;
+			var buffer = new byte[8];
+			var safe_w = (int) (w - kernel_width);
+			var j = 0;
 
 			Array.Clear(buffer, 0, 8);
-			for (j = (int)(0); (j) < (h); ++j)
+			for (j = 0; j < h; ++j)
 			{
-				int i = 0;
+				var i = 0;
 				uint total = 0;
-				Array.Clear(buffer, 0, (int)kernel_width);
-				total = (uint)(0);
+				Array.Clear(buffer, 0, (int) kernel_width);
+				total = 0;
 				switch (kernel_width)
 				{
 					case 2:
-						for (i = (int)(0); i <= safe_w; ++i)
+						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i]);
-							pixels[i] = ((byte)(total / 2));
+							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
+							pixels[i] = (byte) (total / 2);
 						}
+
 						break;
 					case 3:
-						for (i = (int)(0); i <= safe_w; ++i)
+						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i]);
-							pixels[i] = ((byte)(total / 3));
+							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
+							pixels[i] = (byte) (total / 3);
 						}
+
 						break;
 					case 4:
-						for (i = (int)(0); i <= safe_w; ++i)
+						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i]);
-							pixels[i] = ((byte)(total / 4));
+							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
+							pixels[i] = (byte) (total / 4);
 						}
+
 						break;
 					case 5:
-						for (i = (int)(0); i <= safe_w; ++i)
+						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i]);
-							pixels[i] = ((byte)(total / 5));
+							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
+							pixels[i] = (byte) (total / 5);
 						}
+
 						break;
 					default:
-						for (i = (int)(0); i <= safe_w; ++i)
+						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i]);
-							pixels[i] = ((byte)(total / kernel_width));
+							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
+							pixels[i] = (byte) (total / kernel_width);
 						}
+
 						break;
 				}
-				for (; (i) < (w); ++i)
+
+				for (; i < w; ++i)
 				{
-					total -= (uint)(buffer[i & (8 - 1)]);
-					pixels[i] = ((byte)(total / kernel_width));
+					total -= buffer[i & (8 - 1)];
+					pixels[i] = (byte) (total / kernel_width);
 				}
+
 				pixels += stride_in_bytes;
 			}
 		}
 
-		public static void stbtt__v_prefilter(FakePtr<byte> pixels, int w, int h, int stride_in_bytes, uint kernel_width)
+		public static void stbtt__v_prefilter(FakePtr<byte> pixels, int w, int h, int stride_in_bytes,
+			uint kernel_width)
 		{
-			byte[] buffer = new byte[8];
-			int safe_h = (int)(h - kernel_width);
-			int j = 0;
+			var buffer = new byte[8];
+			var safe_h = (int) (h - kernel_width);
+			var j = 0;
 			Array.Clear(buffer, 0, 8);
-			for (j = (int)(0); (j) < (w); ++j)
+			for (j = 0; j < w; ++j)
 			{
-				int i = 0;
+				var i = 0;
 				uint total = 0;
-				Array.Clear(buffer, 0, (int)kernel_width);
-				total = (uint)(0);
+				Array.Clear(buffer, 0, (int) kernel_width);
+				total = 0;
 				switch (kernel_width)
 				{
 					case 2:
-						for (i = (int)(0); i <= safe_h; ++i)
+						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i * stride_in_bytes]);
-							pixels[i * stride_in_bytes] = ((byte)(total / 2));
+							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
+							pixels[i * stride_in_bytes] = (byte) (total / 2);
 						}
+
 						break;
 					case 3:
-						for (i = (int)(0); i <= safe_h; ++i)
+						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i * stride_in_bytes]);
-							pixels[i * stride_in_bytes] = ((byte)(total / 3));
+							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
+							pixels[i * stride_in_bytes] = (byte) (total / 3);
 						}
+
 						break;
 					case 4:
-						for (i = (int)(0); i <= safe_h; ++i)
+						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i * stride_in_bytes]);
-							pixels[i * stride_in_bytes] = ((byte)(total / 4));
+							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
+							pixels[i * stride_in_bytes] = (byte) (total / 4);
 						}
+
 						break;
 					case 5:
-						for (i = (int)(0); i <= safe_h; ++i)
+						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i * stride_in_bytes]);
-							pixels[i * stride_in_bytes] = ((byte)(total / 5));
+							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
+							pixels[i * stride_in_bytes] = (byte) (total / 5);
 						}
+
 						break;
 					default:
-						for (i = (int)(0); i <= safe_h; ++i)
+						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
-							buffer[(i + kernel_width) & (8 - 1)] = (byte)(pixels[i * stride_in_bytes]);
-							pixels[i * stride_in_bytes] = ((byte)(total / kernel_width));
+							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
+							pixels[i * stride_in_bytes] = (byte) (total / kernel_width);
 						}
+
 						break;
 				}
-				for (; (i) < (h); ++i)
+
+				for (; i < h; ++i)
 				{
-					total -= (uint)(buffer[i & (8 - 1)]);
-					pixels[i * stride_in_bytes] = ((byte)(total / kernel_width));
+					total -= buffer[i & (8 - 1)];
+					pixels[i * stride_in_bytes] = (byte) (total / kernel_width);
 				}
+
 				pixels += 1;
 			}
 		}
@@ -1219,368 +1198,376 @@ namespace StbTrueTypeSharp
 		public static float stbtt__oversample_shift(int oversample)
 		{
 			if (oversample == 0)
-				return (float)(0.0f);
-			return (float)((float)(-(oversample - 1)) / (2.0f * (float)(oversample)));
+				return 0.0f;
+			return -(oversample - 1) / (2.0f * oversample);
 		}
 
-		public static void stbtt_GetScaledFontVMetrics(byte[] fontdata, int index, float size, ref float ascent, ref float descent, ref float lineGap)
+		public static void stbtt_GetScaledFontVMetrics(byte[] fontdata, int index, float size, ref float ascent,
+			ref float descent, ref float lineGap)
 		{
-			int i_ascent = 0;
-			int i_descent = 0;
-			int i_lineGap = 0;
+			var i_ascent = 0;
+			var i_descent = 0;
+			var i_lineGap = 0;
 			float scale = 0;
-			stbtt_fontinfo info = new stbtt_fontinfo();
-			stbtt_InitFont(info, fontdata, (int)(stbtt_GetFontOffsetForIndex(fontdata, (int)(index))));
-			scale = (float)((size) > (0) ? stbtt_ScaleForPixelHeight(info, (float)(size)) : stbtt_ScaleForMappingEmToPixels(info, (float)(-size)));
+			var info = new stbtt_fontinfo();
+			stbtt_InitFont(info, fontdata, stbtt_GetFontOffsetForIndex(fontdata, index));
+			scale = size > 0 ? stbtt_ScaleForPixelHeight(info, size) : stbtt_ScaleForMappingEmToPixels(info, -size);
 			stbtt_GetFontVMetrics(info, out i_ascent, out i_descent, out i_lineGap);
-			ascent = (float)((float)(i_ascent) * scale);
-			descent = (float)((float)(i_descent) * scale);
-			lineGap = (float)((float)(i_lineGap) * scale);
+			ascent = i_ascent * scale;
+			descent = i_descent * scale;
+			lineGap = i_lineGap * scale;
 		}
 
-		public static void stbtt_GetPackedQuad(stbtt_packedchar[] chardata, int pw, int ph, int char_index, ref float xpos, ref float ypos, ref stbtt_aligned_quad q, int align_to_integer)
+		public static void stbtt_GetPackedQuad(stbtt_packedchar[] chardata, int pw, int ph, int char_index,
+			ref float xpos, ref float ypos, ref stbtt_aligned_quad q, int align_to_integer)
 		{
-			float ipw = (float)(1.0f / pw);
-			float iph = (float)(1.0f / ph);
-			stbtt_packedchar b = chardata[char_index];
-			if ((align_to_integer) != 0)
+			var ipw = 1.0f / pw;
+			var iph = 1.0f / ph;
+			var b = chardata[char_index];
+			if (align_to_integer != 0)
 			{
-				float x = (float)((int)(Math.Floor((double)((xpos + b.xoff) + 0.5f))));
-				float y = (float)((int)(Math.Floor((double)((ypos + b.yoff) + 0.5f))));
-				q.x0 = (float)(x);
-				q.y0 = (float)(y);
-				q.x1 = (float)(x + b.xoff2 - b.xoff);
-				q.y1 = (float)(y + b.yoff2 - b.yoff);
+				var x = (float) (int) Math.Floor(xpos + b.xoff + 0.5f);
+				var y = (float) (int) Math.Floor(ypos + b.yoff + 0.5f);
+				q.x0 = x;
+				q.y0 = y;
+				q.x1 = x + b.xoff2 - b.xoff;
+				q.y1 = y + b.yoff2 - b.yoff;
 			}
 			else
 			{
-				q.x0 = (float)(xpos + b.xoff);
-				q.y0 = (float)(ypos + b.yoff);
-				q.x1 = (float)(xpos + b.xoff2);
-				q.y1 = (float)(ypos + b.yoff2);
+				q.x0 = xpos + b.xoff;
+				q.y0 = ypos + b.yoff;
+				q.x1 = xpos + b.xoff2;
+				q.y1 = ypos + b.yoff2;
 			}
 
-			q.s0 = (float)(b.x0 * ipw);
-			q.t0 = (float)(b.y0 * iph);
-			q.s1 = (float)(b.x1 * ipw);
-			q.t1 = (float)(b.y1 * iph);
-			xpos += (float)(b.xadvance);
+			q.s0 = b.x0 * ipw;
+			q.t0 = b.y0 * iph;
+			q.s1 = b.x1 * ipw;
+			q.t1 = b.y1 * iph;
+			xpos += b.xadvance;
 		}
 
-		public static int stbtt__ray_intersect_bezier(float[] orig, float[] ray, float[] q0, float[] q1, float[] q2, float[] hits)
+		public static int stbtt__ray_intersect_bezier(float[] orig, float[] ray, float[] q0, float[] q1, float[] q2,
+			float[] hits)
 		{
-			float q0perp = (float)(q0[1] * ray[0] - q0[0] * ray[1]);
-			float q1perp = (float)(q1[1] * ray[0] - q1[0] * ray[1]);
-			float q2perp = (float)(q2[1] * ray[0] - q2[0] * ray[1]);
-			float roperp = (float)(orig[1] * ray[0] - orig[0] * ray[1]);
-			float a = (float)(q0perp - 2 * q1perp + q2perp);
-			float b = (float)(q1perp - q0perp);
-			float c = (float)(q0perp - roperp);
-			float s0 = (float)(0);
-			float s1 = (float)(0);
-			int num_s = (int)(0);
+			var q0perp = q0[1] * ray[0] - q0[0] * ray[1];
+			var q1perp = q1[1] * ray[0] - q1[0] * ray[1];
+			var q2perp = q2[1] * ray[0] - q2[0] * ray[1];
+			var roperp = orig[1] * ray[0] - orig[0] * ray[1];
+			var a = q0perp - 2 * q1perp + q2perp;
+			var b = q1perp - q0perp;
+			var c = q0perp - roperp;
+			var s0 = (float) 0;
+			var s1 = (float) 0;
+			var num_s = 0;
 			if (a != 0.0)
 			{
-				float discr = (float)(b * b - a * c);
-				if ((discr) > (0.0))
+				var discr = b * b - a * c;
+				if (discr > 0.0)
 				{
-					float rcpna = (float)(-1 / a);
-					float d = (float)(Math.Sqrt((double)(discr)));
-					s0 = (float)((b + d) * rcpna);
-					s1 = (float)((b - d) * rcpna);
-					if (((s0) >= (0.0)) && (s0 <= 1.0))
-						num_s = (int)(1);
-					if ((((d) > (0.0)) && ((s1) >= (0.0))) && (s1 <= 1.0))
+					var rcpna = -1 / a;
+					var d = (float) Math.Sqrt(discr);
+					s0 = (b + d) * rcpna;
+					s1 = (b - d) * rcpna;
+					if (s0 >= 0.0 && s0 <= 1.0)
+						num_s = 1;
+					if (d > 0.0 && s1 >= 0.0 && s1 <= 1.0)
 					{
-						if ((num_s) == (0))
-							s0 = (float)(s1);
+						if (num_s == 0)
+							s0 = s1;
 						++num_s;
 					}
 				}
 			}
 			else
 			{
-				s0 = (float)(c / (-2 * b));
-				if (((s0) >= (0.0)) && (s0 <= 1.0))
-					num_s = (int)(1);
+				s0 = c / (-2 * b);
+				if (s0 >= 0.0 && s0 <= 1.0)
+					num_s = 1;
 			}
 
-			if ((num_s) == (0))
-				return (int)(0);
-			else
+			if (num_s == 0) return 0;
+
+			var rcp_len2 = 1 / (ray[0] * ray[0] + ray[1] * ray[1]);
+			var rayn_x = ray[0] * rcp_len2;
+			var rayn_y = ray[1] * rcp_len2;
+			var q0d = q0[0] * rayn_x + q0[1] * rayn_y;
+			var q1d = q1[0] * rayn_x + q1[1] * rayn_y;
+			var q2d = q2[0] * rayn_x + q2[1] * rayn_y;
+			var rod = orig[0] * rayn_x + orig[1] * rayn_y;
+			var q10d = q1d - q0d;
+			var q20d = q2d - q0d;
+			var q0rd = q0d - rod;
+			hits[0] = q0rd + s0 * (2.0f - 2.0f * s0) * q10d + s0 * s0 * q20d;
+			hits[1] = a * s0 + b;
+			if (num_s > 1)
 			{
-				float rcp_len2 = (float)(1 / (ray[0] * ray[0] + ray[1] * ray[1]));
-				float rayn_x = (float)(ray[0] * rcp_len2);
-				float rayn_y = (float)(ray[1] * rcp_len2);
-				float q0d = (float)(q0[0] * rayn_x + q0[1] * rayn_y);
-				float q1d = (float)(q1[0] * rayn_x + q1[1] * rayn_y);
-				float q2d = (float)(q2[0] * rayn_x + q2[1] * rayn_y);
-				float rod = (float)(orig[0] * rayn_x + orig[1] * rayn_y);
-				float q10d = (float)(q1d - q0d);
-				float q20d = (float)(q2d - q0d);
-				float q0rd = (float)(q0d - rod);
-				hits[0] = (float)(q0rd + s0 * (2.0f - 2.0f * s0) * q10d + s0 * s0 * q20d);
-				hits[1] = (float)(a * s0 + b);
-				if ((num_s) > (1))
-				{
-					hits[2] = (float)(q0rd + s1 * (2.0f - 2.0f * s1) * q10d + s1 * s1 * q20d);
-					hits[3] = (float)(a * s1 + b);
-					return (int)(2);
-				}
-				else
-				{
-					return (int)(1);
-				}
+				hits[2] = q0rd + s1 * (2.0f - 2.0f * s1) * q10d + s1 * s1 * q20d;
+				hits[3] = a * s1 + b;
+				return 2;
 			}
 
+			return 1;
 		}
 
 		public static int equal(float[] a, float[] b)
 		{
-			return (int)(((a[0] == b[0]) && (a[1] == b[1])) ? 1 : 0);
+			return a[0] == b[0] && a[1] == b[1] ? 1 : 0;
 		}
 
 		public static int stbtt__compute_crossings_x(float x, float y, int nverts, stbtt_vertex[] verts)
 		{
-			int i = 0;
-			float[] orig = new float[2];
-			float[] ray = new float[2];
-			ray[0] = (float)(1);
-			ray[1] = (float)(0);
+			var i = 0;
+			var orig = new float[2];
+			var ray = new float[2];
+			ray[0] = 1;
+			ray[1] = 0;
 
 			float y_frac = 0;
-			int winding = (int)(0);
-			orig[0] = (float)(x);
-			orig[1] = (float)(y);
-			y_frac = ((float)(y % 1.0f));
-			if ((y_frac) < (0.01f))
-				y += (float)(0.01f);
-			else if ((y_frac) > (0.99f))
-				y -= (float)(0.01f);
-			orig[1] = (float)(y);
-			for (i = (int)(0); (i) < (nverts); ++i)
+			var winding = 0;
+			orig[0] = x;
+			orig[1] = y;
+			y_frac = y % 1.0f;
+			if (y_frac < 0.01f)
+				y += 0.01f;
+			else if (y_frac > 0.99f)
+				y -= 0.01f;
+			orig[1] = y;
+			for (i = 0; i < nverts; ++i)
 			{
-				if ((verts[i].type) == (STBTT_vline))
+				if (verts[i].type == STBTT_vline)
 				{
-					int x0 = (int)(verts[i - 1].x);
-					int y0 = (int)(verts[i - 1].y);
-					int x1 = (int)(verts[i].x);
-					int y1 = (int)(verts[i].y);
-					if ((((y) > ((y0) < (y1) ? (y0) : (y1))) && ((y) < ((y0) < (y1) ? (y1) : (y0)))) && ((x) > ((x0) < (x1) ? (x0) : (x1))))
+					var x0 = (int) verts[i - 1].x;
+					var y0 = (int) verts[i - 1].y;
+					var x1 = (int) verts[i].x;
+					var y1 = (int) verts[i].y;
+					if (y > (y0 < y1 ? y0 : y1) && y < (y0 < y1 ? y1 : y0) && x > (x0 < x1 ? x0 : x1))
 					{
-						float x_inter = (float)((y - y0) / (y1 - y0) * (x1 - x0) + x0);
-						if ((x_inter) < (x))
-							winding += (int)(((y0) < (y1)) ? 1 : -1);
+						var x_inter = (y - y0) / (y1 - y0) * (x1 - x0) + x0;
+						if (x_inter < x)
+							winding += y0 < y1 ? 1 : -1;
 					}
 				}
-				if ((verts[i].type) == (STBTT_vcurve))
+
+				if (verts[i].type == STBTT_vcurve)
 				{
-					int x0 = (int)(verts[i - 1].x);
-					int y0 = (int)(verts[i - 1].y);
-					int x1 = (int)(verts[i].cx);
-					int y1 = (int)(verts[i].cy);
-					int x2 = (int)(verts[i].x);
-					int y2 = (int)(verts[i].y);
-					int ax = (int)((x0) < ((x1) < (x2) ? (x1) : (x2)) ? (x0) : ((x1) < (x2) ? (x1) : (x2)));
-					int ay = (int)((y0) < ((y1) < (y2) ? (y1) : (y2)) ? (y0) : ((y1) < (y2) ? (y1) : (y2)));
-					int by = (int)((y0) < ((y1) < (y2) ? (y2) : (y1)) ? ((y1) < (y2) ? (y2) : (y1)) : (y0));
-					if ((((y) > (ay)) && ((y) < (by))) && ((x) > (ax)))
+					var x0 = (int) verts[i - 1].x;
+					var y0 = (int) verts[i - 1].y;
+					var x1 = (int) verts[i].cx;
+					var y1 = (int) verts[i].cy;
+					var x2 = (int) verts[i].x;
+					var y2 = (int) verts[i].y;
+					var ax = x0 < (x1 < x2 ? x1 : x2) ? x0 : x1 < x2 ? x1 : x2;
+					var ay = y0 < (y1 < y2 ? y1 : y2) ? y0 : y1 < y2 ? y1 : y2;
+					var by = y0 < (y1 < y2 ? y2 : y1) ? y1 < y2 ? y2 : y1 : y0;
+					if (y > ay && y < by && x > ax)
 					{
-						float[] q0 = new float[2];
-						float[] q1 = new float[2];
-						float[] q2 = new float[2];
-						float[] hits = new float[4];
-						q0[0] = ((float)(x0));
-						q0[1] = ((float)(y0));
-						q1[0] = ((float)(x1));
-						q1[1] = ((float)(y1));
-						q2[0] = ((float)(x2));
-						q2[1] = ((float)(y2));
-						if (((equal(q0, q1)) != 0) || ((equal(q1, q2)) != 0))
+						var q0 = new float[2];
+						var q1 = new float[2];
+						var q2 = new float[2];
+						var hits = new float[4];
+						q0[0] = x0;
+						q0[1] = y0;
+						q1[0] = x1;
+						q1[1] = y1;
+						q2[0] = x2;
+						q2[1] = y2;
+						if (equal(q0, q1) != 0 || equal(q1, q2) != 0)
 						{
-							x0 = ((int)(verts[i - 1].x));
-							y0 = ((int)(verts[i - 1].y));
-							x1 = ((int)(verts[i].x));
-							y1 = ((int)(verts[i].y));
-							if ((((y) > ((y0) < (y1) ? (y0) : (y1))) && ((y) < ((y0) < (y1) ? (y1) : (y0)))) && ((x) > ((x0) < (x1) ? (x0) : (x1))))
+							x0 = verts[i - 1].x;
+							y0 = verts[i - 1].y;
+							x1 = verts[i].x;
+							y1 = verts[i].y;
+							if (y > (y0 < y1 ? y0 : y1) && y < (y0 < y1 ? y1 : y0) && x > (x0 < x1 ? x0 : x1))
 							{
-								float x_inter = (float)((y - y0) / (y1 - y0) * (x1 - x0) + x0);
-								if ((x_inter) < (x))
-									winding += (int)(((y0) < (y1)) ? 1 : -1);
+								var x_inter = (y - y0) / (y1 - y0) * (x1 - x0) + x0;
+								if (x_inter < x)
+									winding += y0 < y1 ? 1 : -1;
 							}
 						}
 						else
 						{
-							int num_hits = (int)(stbtt__ray_intersect_bezier(orig, ray, q0, q1, q2, hits));
-							if ((num_hits) >= (1))
-								if ((hits[0]) < (0))
-									winding += (int)((hits[1]) < (0) ? -1 : 1);
-							if ((num_hits) >= (2))
-								if ((hits[2]) < (0))
-									winding += (int)((hits[3]) < (0) ? -1 : 1);
+							var num_hits = stbtt__ray_intersect_bezier(orig, ray, q0, q1, q2, hits);
+							if (num_hits >= 1)
+								if (hits[0] < 0)
+									winding += hits[1] < 0 ? -1 : 1;
+							if (num_hits >= 2)
+								if (hits[2] < 0)
+									winding += hits[3] < 0 ? -1 : 1;
 						}
 					}
 				}
 			}
-			return (int)(winding);
+
+			return winding;
 		}
 
 		public static float stbtt__cuberoot(float x)
 		{
-			if ((x) < (0))
-				return (float)(-(float)(Math.Pow((double)(-x), (double)(1.0f / 3.0f))));
-			else
-				return (float)(Math.Pow((double)(x), (double)(1.0f / 3.0f)));
+			if (x < 0)
+				return -(float) Math.Pow(-x, 1.0f / 3.0f);
+			return (float) Math.Pow(x, 1.0f / 3.0f);
 		}
 
 		public static int stbtt__solve_cubic(float a, float b, float c, float[] r)
 		{
-			float s = (float)(-a / 3);
-			float p = (float)(b - a * a / 3);
-			float q = (float)(a * (2 * a * a - 9 * b) / 27 + c);
-			float p3 = (float)(p * p * p);
-			float d = (float)(q * q + 4 * p3 / 27);
-			if ((d) >= (0))
+			var s = -a / 3;
+			var p = b - a * a / 3;
+			var q = a * (2 * a * a - 9 * b) / 27 + c;
+			var p3 = p * p * p;
+			var d = q * q + 4 * p3 / 27;
+			if (d >= 0)
 			{
-				float z = (float)(Math.Sqrt((double)(d)));
-				float u = (float)((-q + z) / 2);
-				float v = (float)((-q - z) / 2);
-				u = (float)(stbtt__cuberoot((float)(u)));
-				v = (float)(stbtt__cuberoot((float)(v)));
-				r[0] = (float)(s + u + v);
-				return (int)(1);
+				var z = (float) Math.Sqrt(d);
+				var u = (-q + z) / 2;
+				var v = (-q - z) / 2;
+				u = stbtt__cuberoot(u);
+				v = stbtt__cuberoot(v);
+				r[0] = s + u + v;
+				return 1;
 			}
 			else
 			{
-				float u = (float)(Math.Sqrt((double)(-p / 3)));
-				float v = (float)((float)(Math.Acos((double)(-Math.Sqrt((double)(-27 / p3)) * q / 2))) / 3);
-				float m = (float)(Math.Cos((double)(v)));
-				float n = (float)((float)(Math.Cos((double)(v - 3.141592 / 2))) * 1.732050808f);
-				r[0] = (float)(s + u * 2 * m);
-				r[1] = (float)(s - u * (m + n));
-				r[2] = (float)(s - u * (m - n));
-				return (int)(3);
+				var u = (float) Math.Sqrt(-p / 3);
+				var v = (float) Math.Acos(-Math.Sqrt(-27 / p3) * q / 2) / 3;
+				var m = (float) Math.Cos(v);
+				var n = (float) Math.Cos(v - 3.141592 / 2) * 1.732050808f;
+				r[0] = s + u * 2 * m;
+				r[1] = s - u * (m + n);
+				r[2] = s - u * (m - n);
+				return 3;
 			}
 		}
 
-		public static int stbtt__CompareUTF8toUTF16_bigendian_prefix(FakePtr<byte> s1, int len1, FakePtr<byte> s2, int len2)
+		public static int stbtt__CompareUTF8toUTF16_bigendian_prefix(FakePtr<byte> s1, int len1, FakePtr<byte> s2,
+			int len2)
 		{
-			int i = (int)(0);
-			while ((len2) != 0)
+			var i = 0;
+			while (len2 != 0)
 			{
-				ushort ch = (ushort)(s2[0] * 256 + s2[1]);
-				if ((ch) < (0x80))
+				var ch = (ushort) (s2[0] * 256 + s2[1]);
+				if (ch < 0x80)
 				{
-					if ((i) >= (len1))
-						return (int)(-1);
+					if (i >= len1)
+						return -1;
 					if (s1[i++] != ch)
-						return (int)(-1);
+						return -1;
 				}
-				else if ((ch) < (0x800))
+				else if (ch < 0x800)
 				{
-					if ((i + 1) >= (len1))
-						return (int)(-1);
+					if (i + 1 >= len1)
+						return -1;
 					if (s1[i++] != 0xc0 + (ch >> 6))
-						return (int)(-1);
+						return -1;
 					if (s1[i++] != 0x80 + (ch & 0x3f))
-						return (int)(-1);
+						return -1;
 				}
-				else if (((ch) >= (0xd800)) && ((ch) < (0xdc00)))
+				else if (ch >= 0xd800 && ch < 0xdc00)
 				{
 					uint c = 0;
-					ushort ch2 = (ushort)(s2[2] * 256 + s2[3]);
-					if ((i + 3) >= (len1))
-						return (int)(-1);
-					c = (uint)(((ch - 0xd800) << 10) + (ch2 - 0xdc00) + 0x10000);
+					var ch2 = (ushort) (s2[2] * 256 + s2[3]);
+					if (i + 3 >= len1)
+						return -1;
+					c = (uint) (((ch - 0xd800) << 10) + (ch2 - 0xdc00) + 0x10000);
 					if (s1[i++] != 0xf0 + (c >> 18))
-						return (int)(-1);
+						return -1;
 					if (s1[i++] != 0x80 + ((c >> 12) & 0x3f))
-						return (int)(-1);
+						return -1;
 					if (s1[i++] != 0x80 + ((c >> 6) & 0x3f))
-						return (int)(-1);
-					if (s1[i++] != 0x80 + ((c) & 0x3f))
-						return (int)(-1);
+						return -1;
+					if (s1[i++] != 0x80 + (c & 0x3f))
+						return -1;
 					s2 += 2;
-					len2 -= (int)(2);
+					len2 -= 2;
 				}
-				else if (((ch) >= (0xdc00)) && ((ch) < (0xe000)))
+				else if (ch >= 0xdc00 && ch < 0xe000)
 				{
-					return (int)(-1);
+					return -1;
 				}
 				else
 				{
-					if ((i + 2) >= (len1))
-						return (int)(-1);
+					if (i + 2 >= len1)
+						return -1;
 					if (s1[i++] != 0xe0 + (ch >> 12))
-						return (int)(-1);
+						return -1;
 					if (s1[i++] != 0x80 + ((ch >> 6) & 0x3f))
-						return (int)(-1);
-					if (s1[i++] != 0x80 + ((ch) & 0x3f))
-						return (int)(-1);
+						return -1;
+					if (s1[i++] != 0x80 + (ch & 0x3f))
+						return -1;
 				}
+
 				s2 += 2;
-				len2 -= (int)(2);
+				len2 -= 2;
 			}
-			return (int)(i);
+
+			return i;
 		}
 
-		public static int stbtt_CompareUTF8toUTF16_bigendian_internal(FakePtr<byte> s1, int len1, FakePtr<byte> s2, int len2)
+		public static int stbtt_CompareUTF8toUTF16_bigendian_internal(FakePtr<byte> s1, int len1, FakePtr<byte> s2,
+			int len2)
 		{
-			return (int)((len1) == (stbtt__CompareUTF8toUTF16_bigendian_prefix((FakePtr<byte>)(s1), (int)(len1), (FakePtr<byte>)(s2), (int)(len2))) ? 1 : 0);
+			return len1 == stbtt__CompareUTF8toUTF16_bigendian_prefix(s1, len1, s2, len2) ? 1 : 0;
 		}
 
-		public static int stbtt__matchpair(FakePtr<byte> fc, uint nm, FakePtr<byte> name, int nlen, int target_id, int next_id)
+		public static int stbtt__matchpair(FakePtr<byte> fc, uint nm, FakePtr<byte> name, int nlen, int target_id,
+			int next_id)
 		{
-			int i = 0;
-			int count = (int)(ttUSHORT(fc + nm + 2));
-			int stringOffset = (int)(nm + ttUSHORT(fc + nm + 4));
-			for (i = (int)(0); (i) < (count); ++i)
+			var i = 0;
+			var count = (int) ttUSHORT(fc + nm + 2);
+			var stringOffset = (int) (nm + ttUSHORT(fc + nm + 4));
+			for (i = 0; i < count; ++i)
 			{
-				uint loc = (uint)(nm + 6 + 12 * i);
-				int id = (int)(ttUSHORT(fc + loc + 6));
-				if ((id) == (target_id))
+				var loc = (uint) (nm + 6 + 12 * i);
+				var id = (int) ttUSHORT(fc + loc + 6);
+				if (id == target_id)
 				{
-					int platform = (int)(ttUSHORT(fc + loc + 0));
-					int encoding = (int)(ttUSHORT(fc + loc + 2));
-					int language = (int)(ttUSHORT(fc + loc + 4));
-					if ((((platform) == (0)) || (((platform) == (3)) && ((encoding) == (1)))) || (((platform) == (3)) && ((encoding) == (10))))
+					var platform = (int) ttUSHORT(fc + loc + 0);
+					var encoding = (int) ttUSHORT(fc + loc + 2);
+					var language = (int) ttUSHORT(fc + loc + 4);
+					if (platform == 0 || platform == 3 && encoding == 1 || platform == 3 && encoding == 10)
 					{
-						int slen = (int)(ttUSHORT(fc + loc + 8));
-						int off = (int)(ttUSHORT(fc + loc + 10));
-						int matchlen = (int)(stbtt__CompareUTF8toUTF16_bigendian_prefix(name, (int)(nlen), fc + stringOffset + off, (int)(slen)));
-						if ((matchlen) >= (0))
+						var slen = (int) ttUSHORT(fc + loc + 8);
+						var off = (int) ttUSHORT(fc + loc + 10);
+						var matchlen =
+							stbtt__CompareUTF8toUTF16_bigendian_prefix(name, nlen, fc + stringOffset + off, slen);
+						if (matchlen >= 0)
 						{
-							if ((((((i + 1) < (count)) && ((ttUSHORT(fc + loc + 12 + 6)) == (next_id))) && ((ttUSHORT(fc + loc + 12)) == (platform))) && ((ttUSHORT(fc + loc + 12 + 2)) == (encoding))) && ((ttUSHORT(fc + loc + 12 + 4)) == (language)))
+							if (i + 1 < count && ttUSHORT(fc + loc + 12 + 6) == next_id &&
+							    ttUSHORT(fc + loc + 12) == platform && ttUSHORT(fc + loc + 12 + 2) == encoding &&
+							    ttUSHORT(fc + loc + 12 + 4) == language)
 							{
-								slen = (int)(ttUSHORT(fc + loc + 12 + 8));
-								off = (int)(ttUSHORT(fc + loc + 12 + 10));
-								if ((slen) == (0))
+								slen = ttUSHORT(fc + loc + 12 + 8);
+								off = ttUSHORT(fc + loc + 12 + 10);
+								if (slen == 0)
 								{
-									if ((matchlen) == (nlen))
-										return (int)(1);
+									if (matchlen == nlen)
+										return 1;
 								}
-								else if (((matchlen) < (nlen)) && ((name[matchlen]) == (' ')))
+								else if (matchlen < nlen && name[matchlen] == ' ')
 								{
 									++matchlen;
-									if ((stbtt_CompareUTF8toUTF16_bigendian_internal((FakePtr<byte>)(name + matchlen), (int)(nlen - matchlen), (FakePtr<byte>)(fc + stringOffset + off), (int)(slen))) != 0)
-										return (int)(1);
+									if (stbtt_CompareUTF8toUTF16_bigendian_internal(name + matchlen, nlen - matchlen,
+										    fc + stringOffset + off, slen) != 0)
+										return 1;
 								}
 							}
 							else
 							{
-								if ((matchlen) == (nlen))
-									return (int)(1);
+								if (matchlen == nlen)
+									return 1;
 							}
 						}
 					}
 				}
 			}
-			return (int)(0);
+
+			return 0;
 		}
 
 		public static int stbtt__matches(byte[] data, uint offset, FakePtr<byte> name, int flags)
 		{
-			int nlen = 0;
+			var nlen = 0;
 			var ptr = name;
 
 			while (ptr.GetAndIncrease() != '\0')
@@ -1590,77 +1577,79 @@ namespace StbTrueTypeSharp
 			uint nm = 0;
 			uint hd = 0;
 
-			FakePtr<byte> fc = new FakePtr<byte>(data);
+			var fc = new FakePtr<byte>(data);
 			if (stbtt__isfont(fc + offset) == 0)
-				return (int)(0);
-			if ((flags) != 0)
+				return 0;
+			if (flags != 0)
 			{
-				hd = (uint)(stbtt__find_table(fc, (uint)(offset), "head"));
+				hd = stbtt__find_table(fc, offset, "head");
 				if ((ttUSHORT(fc + hd + 44) & 7) != (flags & 7))
-					return (int)(0);
+					return 0;
 			}
 
-			nm = (uint)(stbtt__find_table(fc, (uint)(offset), "name"));
+			nm = stbtt__find_table(fc, offset, "name");
 			if (nm == 0)
-				return (int)(0);
-			if ((flags) != 0)
+				return 0;
+			if (flags != 0)
 			{
-				if ((stbtt__matchpair(fc, (uint)(nm), name, (int)(nlen), (int)(16), (int)(-1))) != 0)
-					return (int)(1);
-				if ((stbtt__matchpair(fc, (uint)(nm), name, (int)(nlen), (int)(1), (int)(-1))) != 0)
-					return (int)(1);
-				if ((stbtt__matchpair(fc, (uint)(nm), name, (int)(nlen), (int)(3), (int)(-1))) != 0)
-					return (int)(1);
+				if (stbtt__matchpair(fc, nm, name, nlen, 16, -1) != 0)
+					return 1;
+				if (stbtt__matchpair(fc, nm, name, nlen, 1, -1) != 0)
+					return 1;
+				if (stbtt__matchpair(fc, nm, name, nlen, 3, -1) != 0)
+					return 1;
 			}
 			else
 			{
-				if ((stbtt__matchpair(fc, (uint)(nm), name, (int)(nlen), (int)(16), (int)(17))) != 0)
-					return (int)(1);
-				if ((stbtt__matchpair(fc, (uint)(nm), name, (int)(nlen), (int)(1), (int)(2))) != 0)
-					return (int)(1);
-				if ((stbtt__matchpair(fc, (uint)(nm), name, (int)(nlen), (int)(3), (int)(-1))) != 0)
-					return (int)(1);
+				if (stbtt__matchpair(fc, nm, name, nlen, 16, 17) != 0)
+					return 1;
+				if (stbtt__matchpair(fc, nm, name, nlen, 1, 2) != 0)
+					return 1;
+				if (stbtt__matchpair(fc, nm, name, nlen, 3, -1) != 0)
+					return 1;
 			}
 
-			return (int)(0);
+			return 0;
 		}
 
 		public static int stbtt_FindMatchingFont_internal(byte[] font_collection, FakePtr<byte> name_utf8, int flags)
 		{
-			int i = 0;
-			for (i = (int)(0); ; ++i)
+			var i = 0;
+			for (i = 0;; ++i)
 			{
-				int off = (int)(stbtt_GetFontOffsetForIndex(font_collection, (int)(i)));
-				if ((off) < (0))
-					return (int)(off);
-				if ((stbtt__matches(font_collection, (uint)(off), (FakePtr<byte>)(name_utf8), (int)(flags))) != 0)
-					return (int)(off);
+				var off = stbtt_GetFontOffsetForIndex(font_collection, i);
+				if (off < 0)
+					return off;
+				if (stbtt__matches(font_collection, (uint) off, name_utf8, flags) != 0)
+					return off;
 			}
 		}
 
-		public static int stbtt_BakeFontBitmap(byte[] data, int offset, float pixel_height, FakePtr<byte> pixels, int pw, int ph, int first_char, int num_chars, stbtt_bakedchar[] chardata)
+		public static int stbtt_BakeFontBitmap(byte[] data, int offset, float pixel_height, FakePtr<byte> pixels,
+			int pw, int ph, int first_char, int num_chars, stbtt_bakedchar[] chardata)
 		{
-			return (int)(stbtt_BakeFontBitmap_internal(data, (int)(offset), (float)(pixel_height), pixels, (int)(pw), (int)(ph), (int)(first_char), (int)(num_chars), chardata));
+			return stbtt_BakeFontBitmap_internal(data, offset, pixel_height, pixels, pw, ph, first_char, num_chars,
+				chardata);
 		}
 
 		public static int stbtt_GetFontOffsetForIndex(byte[] data, int index)
 		{
-			return (int)(stbtt_GetFontOffsetForIndex_internal(new FakePtr<byte>(data), (int)(index)));
+			return stbtt_GetFontOffsetForIndex_internal(new FakePtr<byte>(data), index);
 		}
 
 		public static int stbtt_GetNumberOfFonts(FakePtr<byte> data)
 		{
-			return (int)(stbtt_GetNumberOfFonts_internal(data));
+			return stbtt_GetNumberOfFonts_internal(data);
 		}
 
 		public static int stbtt_FindMatchingFont(byte[] fontdata, FakePtr<byte> name, int flags)
 		{
-			return (int)(stbtt_FindMatchingFont_internal(fontdata, name, (int)(flags)));
+			return stbtt_FindMatchingFont_internal(fontdata, name, flags);
 		}
 
 		public static int stbtt_CompareUTF8toUTF16_bigendian(FakePtr<byte> s1, int len1, FakePtr<byte> s2, int len2)
 		{
-			return (int)(stbtt_CompareUTF8toUTF16_bigendian_internal(s1, (int)(len1), s2, (int)(len2)));
+			return stbtt_CompareUTF8toUTF16_bigendian_internal(s1, len1, s2, len2);
 		}
 	}
 }
