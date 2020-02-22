@@ -204,7 +204,6 @@ namespace StbTrueTypeSharp
 			}
 		}
 
-		static float[] scanline_data = new float[129];
 		public static void stbtt__rasterize_sorted_edges(stbtt__bitmap result, FakePtr<stbtt__edge> e, int n,
 			int vsubsample, int off_x, int off_y)
 		{
@@ -212,6 +211,7 @@ namespace StbTrueTypeSharp
 			var y = 0;
 			var j = 0;
 			var i = 0;
+			var scanline_data = new float[129];
 			FakePtr<float> scanline;
 			FakePtr<float> scanline2;
 			if (result.w > 64)
