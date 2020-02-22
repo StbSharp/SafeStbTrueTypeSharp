@@ -228,16 +228,32 @@ namespace StbTrueTypeSharp
 				var step = active;
 				scanline.memset(0, result.w);
 				scanline2.memset(0, result.w + 1);
+
+				stbtt__active_edge oldStep = null;
 				while (step != null)
 				{
 					var z = step;
 					if (z.ey <= scan_y_top)
 					{
+						// In original code `step` had pointer to pointer type(stbtt__active_edge **)
+						// So `step = z.next`(originally `*step = z.next`) was actually setting to z.next 
+						// whatever `step` was pointing to
+						// we need to somehow reproduce that behavior
+						if (step == active)
+						{
+							active = z.next;
+						}
+						else if (oldStep != null)
+						{
+							oldStep.next = z.next;
+						}
+
 						step = z.next;
 						z.direction = 0;
 					}
 					else
 					{
+						oldStep = step;
 						step = step.next;
 					}
 				}
