@@ -503,9 +503,9 @@ namespace StbTrueTypeSharp
 						}
 						else
 						{
-							mtx[4] = comp.Value;
+							mtx[4] = (sbyte)comp.Value;
 							comp += 1;
-							mtx[5] = comp.Value;
+							mtx[5] = (sbyte)comp.Value;
 							comp += 1;
 						}
 					}
@@ -1362,6 +1362,7 @@ namespace StbTrueTypeSharp
 			gbm.w = out_w;
 			gbm.h = out_h;
 			gbm.stride = out_stride;
+
 			if (gbm.w != 0 && gbm.h != 0)
 				stbtt_Rasterize(gbm, 0.35f, vertices, num_verts, scale_x, scale_y, shift_x, shift_y, ix0, iy0, 1);
 		}
