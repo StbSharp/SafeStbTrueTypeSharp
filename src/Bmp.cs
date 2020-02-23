@@ -204,10 +204,55 @@ namespace StbTrueTypeSharp
 			}
 		}
 
+		private interface IHolder<T>
+		{
+			T Value
+			{
+				get; set;
+			}
+		}
+
+		private struct SimpleHolder<T> : IHolder<T>
+		{
+			public T Value
+			{
+				get;
+				set;
+			}
+
+			public SimpleHolder(T val)
+			{
+				Value = val;
+			}
+		}
+
+		private struct ActiveEdgeNext : IHolder<stbtt__active_edge>
+		{
+			private readonly stbtt__active_edge _p;
+
+			public stbtt__active_edge Value
+			{
+				get
+				{
+					return _p.next;
+				}
+
+				set
+				{
+					_p.next = value;
+				}
+			}
+
+			public ActiveEdgeNext(stbtt__active_edge p)
+			{
+				_p = p;
+			}
+		}
+
 		public static void stbtt__rasterize_sorted_edges(stbtt__bitmap result, FakePtr<stbtt__edge> e, int n,
 			int vsubsample, int off_x, int off_y)
 		{
-			stbtt__active_edge active = null;
+			var active = new SimpleHolder<stbtt__active_edge>(null);
 			var y = 0;
 			var j = 0;
 			var i = 0;
@@ -224,37 +269,26 @@ namespace StbTrueTypeSharp
 			{
 				var scan_y_top = y + 0.0f;
 				var scan_y_bottom = y + 1.0f;
-				var step = active;
+				IHolder<stbtt__active_edge> step = active;
 
 				Array.Clear(scanline, 0, result.w);
 				Array.Clear(scanline, scanline2, result.w + 1);
 
-				stbtt__active_edge oldStep = null;
-				while (step != null)
+				while (step.Value != null)
 				{
-					var z = step;
+					var z = step.Value;
 					if (z.ey <= scan_y_top)
 					{
 						// In original code `step` had pointer to pointer type(stbtt__active_edge **)
-						// So `step = z.next`(originally `*step = z.next`) was actually setting to z.next 
+						// So `step.Value = z.next`(originally `*step = z.next`) was actually setting to z.next 
 						// whatever `step` was pointing to
-						// we need to somehow reproduce that behavior
-						if (step == active)
-						{
-							active = z.next;
-						}
-						else if (oldStep != null)
-						{
-							oldStep.next = z.next;
-						}
-
-						step = z.next;
+						// So this whole complicated logic starting with IHolder<T> is required to reproduce that behavior
+						step.Value = z.next;
 						z.direction = 0;
 					}
 					else
 					{
-						oldStep = step;
-						step = step.next;
+						step = new ActiveEdgeNext(step.Value);
 					}
 				}
 
@@ -268,16 +302,16 @@ namespace StbTrueTypeSharp
 							if (j == 0 && off_y != 0)
 								if (z.ey < scan_y_top)
 									z.ey = scan_y_top;
-							z.next = active;
-							active = z;
+							z.next = active.Value;
+							active.Value = z;
 						}
 					}
 
 					++e;
 				}
 
-				if (active != null)
-					stbtt__fill_active_edges_new(scanline, scanline2 + 1, result.w, active, scan_y_top);
+				if (active.Value != null)
+					stbtt__fill_active_edges_new(scanline, scanline2 + 1, result.w, active.Value, scan_y_top);
 				{
 					var sum = (float)0;
 					for (i = 0; i < result.w; ++i)
@@ -294,11 +328,11 @@ namespace StbTrueTypeSharp
 					}
 				}
 				step = active;
-				while (step != null)
+				while (step.Value != null)
 				{
-					var z = step;
+					var z = step.Value;
 					z.fx += z.fdx;
-					step = step.next;
+					step = new ActiveEdgeNext(step.Value);
 				}
 
 				++y;
