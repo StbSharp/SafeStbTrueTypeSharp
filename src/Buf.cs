@@ -1,184 +1,195 @@
-﻿using System.Runtime.InteropServices;
-
-namespace StbTrueTypeSharp
+﻿namespace StbTrueTypeSharp
 {
-	partial class StbTrueType
+	public class Buf
 	{
-		public static byte stbtt__buf_get8(stbtt__buf b)
+		public int cursor;
+		public FakePtr<byte> data;
+		public int size;
+
+		public Buf(FakePtr<byte> p, ulong size)
 		{
-			if (b.cursor >= b.size)
+			data = p;
+			this.size = (int)size;
+			cursor = 0;
+		}
+
+		public byte stbtt__buf_get8()
+		{
+			if (cursor >= size)
 				return 0;
-			return b.data[b.cursor++];
+			return data[cursor++];
 		}
 
-		public static byte stbtt__buf_peek8(stbtt__buf b)
+		public byte stbtt__buf_peek8()
 		{
-			if (b.cursor >= b.size)
+			if (cursor >= size)
 				return 0;
-			return b.data[b.cursor];
+			return data[cursor];
 		}
 
-		public static void stbtt__buf_seek(stbtt__buf b, int o)
+		public void stbtt__buf_seek(int o)
 		{
-			b.cursor = o > b.size || o < 0 ? b.size : o;
+			cursor = o > size || o < 0 ? size : o;
 		}
 
-		public static void stbtt__buf_skip(stbtt__buf b, int o)
+		public void stbtt__buf_skip(int o)
 		{
-			stbtt__buf_seek(b, b.cursor + o);
+			stbtt__buf_seek(cursor + o);
 		}
 
-		public static uint stbtt__buf_get(stbtt__buf b, int n)
+		public uint stbtt__buf_get(int n)
 		{
-			var v = (uint) 0;
+			var v = (uint)0;
 			var i = 0;
-			for (i = 0; i < n; i++) v = (v << 8) | stbtt__buf_get8(b);
+			for (i = 0; i < n; i++)
+				v = (v << 8) | stbtt__buf_get8();
 			return v;
 		}
 
-		public static stbtt__buf stbtt__new_buf(FakePtr<byte> p, ulong size)
+		public Buf stbtt__buf_range(int o, int s)
 		{
-			var r = new stbtt__buf();
-			r.data = p;
-			r.size = (int) size;
-			r.cursor = 0;
-			return r;
-		}
-
-		public static stbtt__buf stbtt__buf_range(stbtt__buf b, int o, int s)
-		{
-			var r = stbtt__new_buf(FakePtr<byte>.Null, 0);
-			if (o < 0 || s < 0 || o > b.size || s > b.size - o)
+			var r = new Buf(FakePtr<byte>.Null, 0);
+			if (o < 0 || s < 0 || o > size || s > size - o)
 				return r;
-			r.data = b.data + o;
+			r.data = data + o;
 			r.size = s;
 			return r;
 		}
 
-		public static stbtt__buf stbtt__cff_get_index(stbtt__buf b)
+		public Buf stbtt__cff_get_index()
 		{
 			var count = 0;
 			var start = 0;
 			var offsize = 0;
-			start = b.cursor;
-			count = (int) stbtt__buf_get(b, 2);
+			start = cursor;
+			count = (int)stbtt__buf_get(2);
 			if (count != 0)
 			{
-				offsize = stbtt__buf_get8(b);
-				stbtt__buf_skip(b, offsize * count);
-				stbtt__buf_skip(b, (int) (stbtt__buf_get(b, offsize) - 1));
+				offsize = stbtt__buf_get8();
+				stbtt__buf_skip(offsize * count);
+				stbtt__buf_skip((int)(stbtt__buf_get(offsize) - 1));
 			}
 
-			return stbtt__buf_range(b, start, b.cursor - start);
+			return stbtt__buf_range(start, cursor - start);
 		}
 
-		public static uint stbtt__cff_int(stbtt__buf b)
+		public uint stbtt__cff_int()
 		{
-			var b0 = (int) stbtt__buf_get8(b);
+			var b0 = (int)stbtt__buf_get8();
 			if (b0 >= 32 && b0 <= 246)
-				return (uint) (b0 - 139);
+				return (uint)(b0 - 139);
 			if (b0 >= 247 && b0 <= 250)
-				return (uint) ((b0 - 247) * 256 + stbtt__buf_get8(b) + 108);
+				return (uint)((b0 - 247) * 256 + stbtt__buf_get8() + 108);
 			if (b0 >= 251 && b0 <= 254)
-				return (uint) (-(b0 - 251) * 256 - stbtt__buf_get8(b) - 108);
+				return (uint)(-(b0 - 251) * 256 - stbtt__buf_get8() - 108);
 			if (b0 == 28)
-				return stbtt__buf_get(b, 2);
+				return stbtt__buf_get(2);
 			if (b0 == 29)
-				return stbtt__buf_get(b, 4);
+				return stbtt__buf_get(4);
 			return 0;
 		}
 
-		public static void stbtt__cff_skip_operand(stbtt__buf b)
+		public void stbtt__cff_skip_operand()
 		{
 			var v = 0;
-			var b0 = (int) stbtt__buf_peek8(b);
+			var b0 = (int)stbtt__buf_peek8();
 			if (b0 == 30)
 			{
-				stbtt__buf_skip(b, 1);
-				while (b.cursor < b.size)
+				stbtt__buf_skip(1);
+				while (cursor < size)
 				{
-					v = stbtt__buf_get8(b);
+					v = stbtt__buf_get8();
 					if ((v & 0xF) == 0xF || v >> 4 == 0xF)
 						break;
 				}
 			}
 			else
 			{
-				stbtt__cff_int(b);
+				stbtt__cff_int();
 			}
 		}
 
-		public static stbtt__buf stbtt__dict_get(stbtt__buf b, int key)
+		public Buf stbtt__dict_get(int key)
 		{
-			stbtt__buf_seek(b, 0);
-			while (b.cursor < b.size)
+			stbtt__buf_seek(0);
+			while (cursor < size)
 			{
-				var start = b.cursor;
+				var start = cursor;
 				var end = 0;
 				var op = 0;
-				while (stbtt__buf_peek8(b) >= 28) stbtt__cff_skip_operand(b);
-				end = b.cursor;
-				op = stbtt__buf_get8(b);
+				while (stbtt__buf_peek8() >= 28)
+					stbtt__cff_skip_operand();
+				end = cursor;
+				op = stbtt__buf_get8();
 				if (op == 12)
-					op = stbtt__buf_get8(b) | 0x100;
+					op = stbtt__buf_get8() | 0x100;
 				if (op == key)
-					return stbtt__buf_range(b, start, end - start);
+					return stbtt__buf_range(start, end - start);
 			}
 
-			return stbtt__buf_range(b, 0, 0);
+			return stbtt__buf_range(0, 0);
 		}
 
-		public static void stbtt__dict_get_ints(stbtt__buf b, int key, int outcount, FakePtr<uint> _out_)
+		public void stbtt__dict_get_ints(int key, int outcount, FakePtr<uint> _out_)
 		{
 			var i = 0;
-			var operands = stbtt__dict_get(b, key);
-			for (i = 0; i < outcount && operands.cursor < operands.size; i++) _out_[i] = stbtt__cff_int(operands);
+			var operands = stbtt__dict_get(key);
+			for (i = 0; i < outcount && operands.cursor < operands.size; i++)
+				_out_[i] = operands.stbtt__cff_int();
 		}
 
-		public static int stbtt__cff_index_count(stbtt__buf b)
+		public void stbtt__dict_get_ints(int key, out uint _out_)
 		{
-			stbtt__buf_seek(b, 0);
-			return (int) stbtt__buf_get(b, 2);
+			var temp = new FakePtr<uint>(new uint[1]);
+
+			stbtt__dict_get_ints(key, 1, temp);
+
+			_out_ = temp[0];
 		}
 
-		public static stbtt__buf stbtt__cff_index_get(stbtt__buf b, int i)
+		public int stbtt__cff_index_count()
+		{
+			stbtt__buf_seek(0);
+			return (int)stbtt__buf_get(2);
+		}
+
+		public Buf stbtt__cff_index_get(int i)
 		{
 			var count = 0;
 			var offsize = 0;
 			var start = 0;
 			var end = 0;
-			stbtt__buf_seek(b, 0);
-			count = (int) stbtt__buf_get(b, 2);
-			offsize = stbtt__buf_get8(b);
-			stbtt__buf_skip(b, i * offsize);
-			start = (int) stbtt__buf_get(b, offsize);
-			end = (int) stbtt__buf_get(b, offsize);
-			return stbtt__buf_range(b, 2 + (count + 1) * offsize + start, end - start);
+			stbtt__buf_seek(0);
+			count = (int)stbtt__buf_get(2);
+			offsize = stbtt__buf_get8();
+			stbtt__buf_skip(i * offsize);
+			start = (int)stbtt__buf_get(offsize);
+			end = (int)stbtt__buf_get(offsize);
+			return stbtt__buf_range(2 + (count + 1) * offsize + start, end - start);
 		}
 
-		public static stbtt__buf stbtt__get_subrs(stbtt__buf cff, stbtt__buf fontdict)
+		public static Buf stbtt__get_subrs(Buf cff, Buf fontdict)
 		{
-			var subrsoff = (uint) 0;
+			var subrsoff = (uint)0;
 
 			var private_loc = new uint[2];
 			private_loc[0] = 0;
 			private_loc[1] = 0;
 
-			var pdict = new stbtt__buf();
-			stbtt__dict_get_ints(fontdict, 18, 2, new FakePtr<uint>(private_loc));
+			fontdict.stbtt__dict_get_ints(18, 2, new FakePtr<uint>(private_loc));
 			if (private_loc[1] == 0 || private_loc[0] == 0)
-				return stbtt__new_buf(FakePtr<byte>.Null, 0);
-			pdict = stbtt__buf_range(cff, (int) private_loc[1], (int) private_loc[0]);
-			stbtt__dict_get_ints(pdict, 19, 1, new FakePtr<uint>(subrsoff));
+				return new Buf(FakePtr<byte>.Null, 0);
+			var pdict = cff.stbtt__buf_range((int)private_loc[1], (int)private_loc[0]);
+			pdict.stbtt__dict_get_ints(19, 1, new FakePtr<uint>(subrsoff));
 			if (subrsoff == 0)
-				return stbtt__new_buf(FakePtr<byte>.Null, 0);
-			stbtt__buf_seek(cff, (int) (private_loc[1] + subrsoff));
-			return stbtt__cff_get_index(cff);
+				return new Buf(FakePtr<byte>.Null, 0);
+			cff.stbtt__buf_seek((int)(private_loc[1] + subrsoff));
+			return cff.stbtt__cff_get_index();
 		}
 
-		public static stbtt__buf stbtt__get_subr(stbtt__buf idx, int n)
+		public Buf stbtt__get_subr(int n)
 		{
-			var count = stbtt__cff_index_count(idx);
+			var count = stbtt__cff_index_count();
 			var bias = 107;
 			if (count >= 33900)
 				bias = 32768;
@@ -186,15 +197,8 @@ namespace StbTrueTypeSharp
 				bias = 1131;
 			n += bias;
 			if (n < 0 || n >= count)
-				return stbtt__new_buf(FakePtr<byte>.Null, 0);
-			return stbtt__cff_index_get(idx, n);
-		}
-
-		public class stbtt__buf
-		{
-			public int cursor;
-			public FakePtr<byte> data;
-			public int size;
+				return new Buf(FakePtr<byte>.Null, 0);
+			return stbtt__cff_index_get(n);
 		}
 	}
 }

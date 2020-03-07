@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static StbTrueTypeSharp.PackContext;
 
 namespace StbSharp.MonoGame.Test
 {
 	public class FontBaker
 	{
 		private byte[] _bitmap;
-		private StbTrueType.stbtt_pack_context _context;
+		private PackContext _context;
 		private Dictionary<int, GlyphInfo> _glyphs;
 		private int bitmapWidth, bitmapHeight;
 
@@ -17,9 +18,9 @@ namespace StbSharp.MonoGame.Test
 			bitmapWidth = width;
 			bitmapHeight = height;
 			_bitmap = new byte[width * height];
-			_context = new StbTrueType.stbtt_pack_context();
+			_context = new PackContext();
 
-			StbTrueType.stbtt_PackBegin(_context, _bitmap, width, height, width, 1);
+			_context.stbtt_PackBegin(_bitmap, width, height, width, 1);
 
 			_glyphs = new Dictionary<int, GlyphInfo>();
 		}
@@ -39,26 +40,27 @@ namespace StbSharp.MonoGame.Test
 			if (!characterRanges.Any())
 				throw new ArgumentException("characterRanges must have a least one value.");
 
-			var fontInfo = new StbTrueType.stbtt_fontinfo();
-			if (StbTrueType.stbtt_InitFont(fontInfo, ttf, 0) == 0)
+			var fontInfo = new FontInfo();
+			if (fontInfo.stbtt_InitFont(ttf, 0) == 0)
 				throw new Exception("Failed to init font.");
 
-			var scaleFactor = StbTrueType.stbtt_ScaleForPixelHeight(fontInfo, fontPixelHeight);
+			var scaleFactor = fontInfo.stbtt_ScaleForPixelHeight(fontPixelHeight);
 
 			int ascent, descent, lineGap;
-			StbTrueType.stbtt_GetFontVMetrics(fontInfo, out ascent, out descent, out lineGap);
+			fontInfo.stbtt_GetFontVMetrics(out ascent, out descent, out lineGap);
 
 			foreach (var range in characterRanges)
 			{
 				if (range.Start > range.End)
 					continue;
 
-				var cd = new StbTrueType.stbtt_packedchar[range.End - range.Start + 1];
-				for(var i = 0; i < cd.Length; ++i)
+				var cd = new stbtt_packedchar[range.End - range.Start + 1];
+				for (var i = 0; i < cd.Length; ++i)
 				{
-					cd[i] = new StbTrueType.stbtt_packedchar();
+					cd[i] = new stbtt_packedchar();
 				}
-				StbTrueType.stbtt_PackFontRange(_context, ttf, 0, fontPixelHeight,
+
+				_context.stbtt_PackFontRange(ttf, 0, fontPixelHeight,
 					range.Start,
 					range.End - range.Start + 1,
 					cd);

@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using static StbTrueTypeSharp.PackContext;
 
 namespace StbTrueTypeSharp
 {
@@ -8,7 +9,7 @@ namespace StbTrueTypeSharp
 #else
 	internal
 #endif
-	static partial class StbTrueType
+	static partial class Common
 	{
 		public const int STBTT_vmove = 1;
 		public const int STBTT_vline = 2;
@@ -93,43 +94,6 @@ namespace StbTrueTypeSharp
 			public float t1;
 		}
 
-		public class stbtt_packedchar
-		{
-			public ushort x0;
-			public ushort x1;
-			public float xadvance;
-			public float xoff;
-			public float xoff2;
-			public ushort y0;
-			public ushort y1;
-			public float yoff;
-			public float yoff2;
-		}
-
-		public class stbtt_pack_range
-		{
-			public int[] array_of_unicode_codepoints;
-			public stbtt_packedchar[] chardata_for_range;
-			public int first_unicode_codepoint_in_range;
-			public float font_size;
-			public byte h_oversample;
-			public int num_chars;
-			public byte v_oversample;
-		}
-
-		public class stbtt_pack_context
-		{
-			public uint h_oversample;
-			public int height;
-			public stbrp_context pack_info;
-			public int padding;
-			public FakePtr<byte> pixels;
-			public int skip_missing;
-			public int stride_in_bytes;
-			public uint v_oversample;
-			public int width;
-		}
-
 		[StructLayout(LayoutKind.Sequential)]
 		public struct stbtt_kerningentry
 		{
@@ -178,25 +142,6 @@ namespace StbTrueTypeSharp
 			public float y;
 		}
 
-		public class stbrp_context
-		{
-			public int bottom_y;
-			public int height;
-			public int width;
-			public int x;
-			public int y;
-		}
-
-		public class stbrp_rect
-		{
-			public int h;
-			public int id;
-			public int w;
-			public int was_packed;
-			public int x;
-			public int y;
-		}
-
 		public static uint stbtt__find_table(FakePtr<byte> data, uint fontstart, string tag)
 		{
 			int num_tables = ttUSHORT(data + fontstart + 4);
@@ -204,9 +149,9 @@ namespace StbTrueTypeSharp
 			int i;
 			for (i = 0; i < num_tables; ++i)
 			{
-				var loc = (uint) (tabledir + 16 * i);
+				var loc = (uint)(tabledir + 16 * i);
 				if ((data + loc + 0)[0] == tag[0] && (data + loc + 0)[1] == tag[1] &&
-				    (data + loc + 0)[2] == tag[2] && (data + loc + 0)[3] == tag[3])
+					(data + loc + 0)[2] == tag[2] && (data + loc + 0)[3] == tag[3])
 					return ttULONG(data + loc + 8);
 			}
 
@@ -215,17 +160,17 @@ namespace StbTrueTypeSharp
 
 		public static ushort ttUSHORT(FakePtr<byte> p)
 		{
-			return (ushort) (p[0] * 256 + p[1]);
+			return (ushort)(p[0] * 256 + p[1]);
 		}
 
 		public static short ttSHORT(FakePtr<byte> p)
 		{
-			return (short) (p[0] * 256 + p[1]);
+			return (short)(p[0] * 256 + p[1]);
 		}
 
 		public static uint ttULONG(FakePtr<byte> p)
 		{
-			return (uint) ((p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
+			return (uint)((p[0] << 24) + (p[1] << 16) + (p[2] << 8) + p[3]);
 		}
 
 		public static int ttLONG(FakePtr<byte> p)
@@ -253,13 +198,13 @@ namespace StbTrueTypeSharp
 			if (stbtt__isfont(font_collection) != 0)
 				return index == 0 ? 0 : -1;
 			if (font_collection[0] == "ttcf"[0] && font_collection[1] == "ttcf"[1] && font_collection[2] == "ttcf"[2] &&
-			    font_collection[3] == "ttcf"[3])
+				font_collection[3] == "ttcf"[3])
 				if (ttULONG(font_collection + 4) == 0x00010000 || ttULONG(font_collection + 4) == 0x00020000)
 				{
 					var n = ttLONG(font_collection + 8);
 					if (index >= n)
 						return -1;
-					return (int) ttULONG(font_collection + 12 + index * 4);
+					return (int)ttULONG(font_collection + 12 + index * 4);
 				}
 
 			return -1;
@@ -270,7 +215,7 @@ namespace StbTrueTypeSharp
 			if (stbtt__isfont(font_collection) != 0)
 				return 1;
 			if (font_collection[0] == "ttcf"[0] && font_collection[1] == "ttcf"[1] && font_collection[2] == "ttcf"[2] &&
-			    font_collection[3] == "ttcf"[3])
+				font_collection[3] == "ttcf"[3])
 				if (ttULONG(font_collection + 4) == 0x00010000 || ttULONG(font_collection + 4) == 0x00020000)
 					return ttLONG(font_collection + 8);
 
@@ -280,10 +225,10 @@ namespace StbTrueTypeSharp
 		public static void stbtt_setvertex(ref stbtt_vertex v, byte type, int x, int y, int cx, int cy)
 		{
 			v.type = type;
-			v.x = (short) x;
-			v.y = (short) y;
-			v.cx = (short) cx;
-			v.cy = (short) cy;
+			v.x = (short)x;
+			v.y = (short)y;
+			v.cx = (short)cx;
+			v.cy = (short)cy;
 		}
 
 		public static int stbtt__close_shape(stbtt_vertex[] vertices, int num_vertices, int was_off, int start_off,
@@ -346,7 +291,7 @@ namespace StbTrueTypeSharp
 							return m;
 					}
 				}
-					break;
+				break;
 				case 2:
 				{
 					var rangeCount = ttUSHORT(coverageTable + 2);
@@ -379,11 +324,11 @@ namespace StbTrueTypeSharp
 						}
 					}
 				}
-					break;
+				break;
 				default:
 				{
 				}
-					break;
+				break;
 			}
 
 			return -1;
@@ -403,7 +348,7 @@ namespace StbTrueTypeSharp
 						return ttUSHORT(classDef1ValueArray + 2 * (glyph - startGlyphID));
 					classDefTable = classDef1ValueArray + 2 * glyphCount;
 				}
-					break;
+				break;
 				case 2:
 				{
 					var classRangeCount = ttUSHORT(classDefTable + 2);
@@ -431,11 +376,11 @@ namespace StbTrueTypeSharp
 
 					classDefTable = classRangeRecords + 6 * classRangeCount;
 				}
-					break;
+				break;
 				default:
 				{
 				}
-					break;
+				break;
 			}
 
 			return -1;
@@ -509,12 +454,12 @@ namespace StbTrueTypeSharp
 				p[m] = t;
 				i = 1;
 				j = n - 1;
-				for (;;)
+				for (; ; )
 				{
-					for (;; ++i)
+					for (; ; ++i)
 						if (!(p[i].y0 < p[0].y0))
 							break;
-					for (;; --j)
+					for (; ; --j)
 						if (!(p[0].y0 < p[j].y0))
 							break;
 					if (i >= j)
@@ -590,9 +535,9 @@ namespace StbTrueTypeSharp
 			var dy2 = y3 - y2;
 			var dx = x3 - x0;
 			var dy = y3 - y0;
-			var longlen = (float) (Math.Sqrt(dx0 * dx0 + dy0 * dy0) + Math.Sqrt(dx1 * dx1 + dy1 * dy1) +
-			                       Math.Sqrt(dx2 * dx2 + dy2 * dy2));
-			var shortlen = (float) Math.Sqrt(dx * dx + dy * dy);
+			var longlen = (float)(Math.Sqrt(dx0 * dx0 + dy0 * dy0) + Math.Sqrt(dx1 * dx1 + dy1 * dy1) +
+								   Math.Sqrt(dx2 * dx2 + dy2 * dy2));
+			var shortlen = (float)Math.Sqrt(dx * dx + dy * dy);
 			var flatness_squared = longlen * longlen - shortlen * shortlen;
 			if (n > 16)
 				return;
@@ -643,9 +588,10 @@ namespace StbTrueTypeSharp
 
 			for (pass = 0; pass < 2; ++pass)
 			{
-				var x = (float) 0;
-				var y = (float) 0;
-				if (pass == 1) points = new stbtt__point[num_points];
+				var x = (float)0;
+				var y = (float)0;
+				if (pass == 1)
+					points = new stbtt__point[num_points];
 				num_points = 0;
 				n = -1;
 				for (i = 0; i < num_verts; ++i)
@@ -694,13 +640,13 @@ namespace StbTrueTypeSharp
 			var y = 0;
 			var bottom_y = 0;
 			var i = 0;
-			var f = new stbtt_fontinfo();
-			if (stbtt_InitFont(f, data, offset) == 0)
+			var f = new FontInfo();
+			if (f.stbtt_InitFont(data, offset) == 0)
 				return -1;
 			pixels.memset(0, pw * ph);
 			x = y = 1;
 			bottom_y = 1;
-			scale = stbtt_ScaleForPixelHeight(f, pixel_height);
+			scale = f.stbtt_ScaleForPixelHeight(pixel_height);
 			for (i = 0; i < num_chars; ++i)
 			{
 				var advance = 0;
@@ -711,9 +657,9 @@ namespace StbTrueTypeSharp
 				var y1 = 0;
 				var gw = 0;
 				var gh = 0;
-				var g = stbtt_FindGlyphIndex(f, first_char + i);
-				stbtt_GetGlyphHMetrics(f, g, ref advance, ref lsb);
-				stbtt_GetGlyphBitmapBox(f, g, scale, scale, ref x0, ref y0, ref x1, ref y1);
+				var g = f.stbtt_FindGlyphIndex(first_char + i);
+				f.stbtt_GetGlyphHMetrics(g, ref advance, ref lsb);
+				f.stbtt_GetGlyphBitmapBox(g, scale, scale, ref x0, ref y0, ref x1, ref y1);
 				gw = x1 - x0;
 				gh = y1 - y0;
 				if (x + gw + 1 >= pw)
@@ -724,11 +670,11 @@ namespace StbTrueTypeSharp
 
 				if (y + gh + 1 >= ph)
 					return -i;
-				stbtt_MakeGlyphBitmap(f, pixels + x + y * pw, gw, gh, pw, scale, scale, g);
-				chardata[i].x0 = (ushort) (short) x;
-				chardata[i].y0 = (ushort) (short) y;
-				chardata[i].x1 = (ushort) (short) (x + gw);
-				chardata[i].y1 = (ushort) (short) (y + gh);
+				f.stbtt_MakeGlyphBitmap(pixels + x + y * pw, gw, gh, pw, scale, scale, g);
+				chardata[i].x0 = (ushort)(short)x;
+				chardata[i].y0 = (ushort)(short)y;
+				chardata[i].x1 = (ushort)(short)(x + gw);
+				chardata[i].y1 = (ushort)(short)(y + gh);
 				chardata[i].xadvance = scale * advance;
 				chardata[i].xoff = x0;
 				chardata[i].yoff = y0;
@@ -746,8 +692,8 @@ namespace StbTrueTypeSharp
 			var d3d_bias = opengl_fillrule != 0 ? 0 : -0.5f;
 			var ipw = 1.0f / pw;
 			var iph = 1.0f / ph;
-			var round_x = (int) Math.Floor(xpos + chardata[char_index].xoff + 0.5f);
-			var round_y = (int) Math.Floor(ypos + chardata[char_index].yoff + 0.5f);
+			var round_x = (int)Math.Floor(xpos + chardata[char_index].xoff + 0.5f);
+			var round_y = (int)Math.Floor(ypos + chardata[char_index].yoff + 0.5f);
 			q.x0 = round_x + d3d_bias;
 			q.y0 = round_y + d3d_bias;
 			q.x1 = round_x + chardata[char_index].x1 - chardata[char_index].x0 + d3d_bias;
@@ -763,7 +709,7 @@ namespace StbTrueTypeSharp
 			uint kernel_width)
 		{
 			var buffer = new byte[8];
-			var safe_w = (int) (w - kernel_width);
+			var safe_w = (int)(w - kernel_width);
 			var j = 0;
 
 			Array.Clear(buffer, 0, 8);
@@ -771,52 +717,52 @@ namespace StbTrueTypeSharp
 			{
 				var i = 0;
 				uint total = 0;
-				Array.Clear(buffer, 0, (int) kernel_width);
+				Array.Clear(buffer, 0, (int)kernel_width);
 				total = 0;
 				switch (kernel_width)
 				{
 					case 2:
 						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
-							pixels[i] = (byte) (total / 2);
+							pixels[i] = (byte)(total / 2);
 						}
 
 						break;
 					case 3:
 						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
-							pixels[i] = (byte) (total / 3);
+							pixels[i] = (byte)(total / 3);
 						}
 
 						break;
 					case 4:
 						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
-							pixels[i] = (byte) (total / 4);
+							pixels[i] = (byte)(total / 4);
 						}
 
 						break;
 					case 5:
 						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
-							pixels[i] = (byte) (total / 5);
+							pixels[i] = (byte)(total / 5);
 						}
 
 						break;
 					default:
 						for (i = 0; i <= safe_w; ++i)
 						{
-							total += (uint) (pixels[i] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i];
-							pixels[i] = (byte) (total / kernel_width);
+							pixels[i] = (byte)(total / kernel_width);
 						}
 
 						break;
@@ -825,7 +771,7 @@ namespace StbTrueTypeSharp
 				for (; i < w; ++i)
 				{
 					total -= buffer[i & (8 - 1)];
-					pixels[i] = (byte) (total / kernel_width);
+					pixels[i] = (byte)(total / kernel_width);
 				}
 
 				pixels += stride_in_bytes;
@@ -836,59 +782,59 @@ namespace StbTrueTypeSharp
 			uint kernel_width)
 		{
 			var buffer = new byte[8];
-			var safe_h = (int) (h - kernel_width);
+			var safe_h = (int)(h - kernel_width);
 			var j = 0;
 			Array.Clear(buffer, 0, 8);
 			for (j = 0; j < w; ++j)
 			{
 				var i = 0;
 				uint total = 0;
-				Array.Clear(buffer, 0, (int) kernel_width);
+				Array.Clear(buffer, 0, (int)kernel_width);
 				total = 0;
 				switch (kernel_width)
 				{
 					case 2:
 						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
-							pixels[i * stride_in_bytes] = (byte) (total / 2);
+							pixels[i * stride_in_bytes] = (byte)(total / 2);
 						}
 
 						break;
 					case 3:
 						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
-							pixels[i * stride_in_bytes] = (byte) (total / 3);
+							pixels[i * stride_in_bytes] = (byte)(total / 3);
 						}
 
 						break;
 					case 4:
 						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
-							pixels[i * stride_in_bytes] = (byte) (total / 4);
+							pixels[i * stride_in_bytes] = (byte)(total / 4);
 						}
 
 						break;
 					case 5:
 						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
-							pixels[i * stride_in_bytes] = (byte) (total / 5);
+							pixels[i * stride_in_bytes] = (byte)(total / 5);
 						}
 
 						break;
 					default:
 						for (i = 0; i <= safe_h; ++i)
 						{
-							total += (uint) (pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
+							total += (uint)(pixels[i * stride_in_bytes] - buffer[i & (8 - 1)]);
 							buffer[(i + kernel_width) & (8 - 1)] = pixels[i * stride_in_bytes];
-							pixels[i * stride_in_bytes] = (byte) (total / kernel_width);
+							pixels[i * stride_in_bytes] = (byte)(total / kernel_width);
 						}
 
 						break;
@@ -897,7 +843,7 @@ namespace StbTrueTypeSharp
 				for (; i < h; ++i)
 				{
 					total -= buffer[i & (8 - 1)];
-					pixels[i * stride_in_bytes] = (byte) (total / kernel_width);
+					pixels[i * stride_in_bytes] = (byte)(total / kernel_width);
 				}
 
 				pixels += 1;
@@ -918,10 +864,10 @@ namespace StbTrueTypeSharp
 			var i_descent = 0;
 			var i_lineGap = 0;
 			float scale = 0;
-			var info = new stbtt_fontinfo();
-			stbtt_InitFont(info, fontdata, stbtt_GetFontOffsetForIndex(fontdata, index));
-			scale = size > 0 ? stbtt_ScaleForPixelHeight(info, size) : stbtt_ScaleForMappingEmToPixels(info, -size);
-			stbtt_GetFontVMetrics(info, out i_ascent, out i_descent, out i_lineGap);
+			var info = new FontInfo();
+			info.stbtt_InitFont(fontdata, stbtt_GetFontOffsetForIndex(fontdata, index));
+			scale = size > 0 ? info.stbtt_ScaleForPixelHeight(size) : info.stbtt_ScaleForMappingEmToPixels(-size);
+			info.stbtt_GetFontVMetrics(out i_ascent, out i_descent, out i_lineGap);
 			ascent = i_ascent * scale;
 			descent = i_descent * scale;
 			lineGap = i_lineGap * scale;
@@ -935,8 +881,8 @@ namespace StbTrueTypeSharp
 			var b = chardata[char_index];
 			if (align_to_integer != 0)
 			{
-				var x = (float) (int) Math.Floor(xpos + b.xoff + 0.5f);
-				var y = (float) (int) Math.Floor(ypos + b.yoff + 0.5f);
+				var x = (float)(int)Math.Floor(xpos + b.xoff + 0.5f);
+				var y = (float)(int)Math.Floor(ypos + b.yoff + 0.5f);
 				q.x0 = x;
 				q.y0 = y;
 				q.x1 = x + b.xoff2 - b.xoff;
@@ -967,8 +913,8 @@ namespace StbTrueTypeSharp
 			var a = q0perp - 2 * q1perp + q2perp;
 			var b = q1perp - q0perp;
 			var c = q0perp - roperp;
-			var s0 = (float) 0;
-			var s1 = (float) 0;
+			var s0 = (float)0;
+			var s1 = (float)0;
 			var num_s = 0;
 			if (a != 0.0)
 			{
@@ -976,7 +922,7 @@ namespace StbTrueTypeSharp
 				if (discr > 0.0)
 				{
 					var rcpna = -1 / a;
-					var d = (float) Math.Sqrt(discr);
+					var d = (float)Math.Sqrt(discr);
 					s0 = (b + d) * rcpna;
 					s1 = (b - d) * rcpna;
 					if (s0 >= 0.0 && s0 <= 1.0)
@@ -996,7 +942,8 @@ namespace StbTrueTypeSharp
 					num_s = 1;
 			}
 
-			if (num_s == 0) return 0;
+			if (num_s == 0)
+				return 0;
 
 			var rcp_len2 = 1 / (ray[0] * ray[0] + ray[1] * ray[1]);
 			var rayn_x = ray[0] * rcp_len2;
@@ -1047,10 +994,10 @@ namespace StbTrueTypeSharp
 			{
 				if (verts[i].type == STBTT_vline)
 				{
-					var x0 = (int) verts[i - 1].x;
-					var y0 = (int) verts[i - 1].y;
-					var x1 = (int) verts[i].x;
-					var y1 = (int) verts[i].y;
+					var x0 = (int)verts[i - 1].x;
+					var y0 = (int)verts[i - 1].y;
+					var x1 = (int)verts[i].x;
+					var y1 = (int)verts[i].y;
 					if (y > (y0 < y1 ? y0 : y1) && y < (y0 < y1 ? y1 : y0) && x > (x0 < x1 ? x0 : x1))
 					{
 						var x_inter = (y - y0) / (y1 - y0) * (x1 - x0) + x0;
@@ -1061,12 +1008,12 @@ namespace StbTrueTypeSharp
 
 				if (verts[i].type == STBTT_vcurve)
 				{
-					var x0 = (int) verts[i - 1].x;
-					var y0 = (int) verts[i - 1].y;
-					var x1 = (int) verts[i].cx;
-					var y1 = (int) verts[i].cy;
-					var x2 = (int) verts[i].x;
-					var y2 = (int) verts[i].y;
+					var x0 = (int)verts[i - 1].x;
+					var y0 = (int)verts[i - 1].y;
+					var x1 = (int)verts[i].cx;
+					var y1 = (int)verts[i].cy;
+					var x2 = (int)verts[i].x;
+					var y2 = (int)verts[i].y;
 					var ax = x0 < (x1 < x2 ? x1 : x2) ? x0 : x1 < x2 ? x1 : x2;
 					var ay = y0 < (y1 < y2 ? y1 : y2) ? y0 : y1 < y2 ? y1 : y2;
 					var by = y0 < (y1 < y2 ? y2 : y1) ? y1 < y2 ? y2 : y1 : y0;
@@ -1115,8 +1062,8 @@ namespace StbTrueTypeSharp
 		public static float stbtt__cuberoot(float x)
 		{
 			if (x < 0)
-				return -(float) Math.Pow(-x, 1.0f / 3.0f);
-			return (float) Math.Pow(x, 1.0f / 3.0f);
+				return -(float)Math.Pow(-x, 1.0f / 3.0f);
+			return (float)Math.Pow(x, 1.0f / 3.0f);
 		}
 
 		public static int stbtt__solve_cubic(float a, float b, float c, float[] r)
@@ -1128,7 +1075,7 @@ namespace StbTrueTypeSharp
 			var d = q * q + 4 * p3 / 27;
 			if (d >= 0)
 			{
-				var z = (float) Math.Sqrt(d);
+				var z = (float)Math.Sqrt(d);
 				var u = (-q + z) / 2;
 				var v = (-q - z) / 2;
 				u = stbtt__cuberoot(u);
@@ -1138,10 +1085,10 @@ namespace StbTrueTypeSharp
 			}
 			else
 			{
-				var u = (float) Math.Sqrt(-p / 3);
-				var v = (float) Math.Acos(-Math.Sqrt(-27 / p3) * q / 2) / 3;
-				var m = (float) Math.Cos(v);
-				var n = (float) Math.Cos(v - 3.141592 / 2) * 1.732050808f;
+				var u = (float)Math.Sqrt(-p / 3);
+				var v = (float)Math.Acos(-Math.Sqrt(-27 / p3) * q / 2) / 3;
+				var m = (float)Math.Cos(v);
+				var n = (float)Math.Cos(v - 3.141592 / 2) * 1.732050808f;
 				r[0] = s + u * 2 * m;
 				r[1] = s - u * (m + n);
 				r[2] = s - u * (m - n);
@@ -1155,7 +1102,7 @@ namespace StbTrueTypeSharp
 			var i = 0;
 			while (len2 != 0)
 			{
-				var ch = (ushort) (s2[0] * 256 + s2[1]);
+				var ch = (ushort)(s2[0] * 256 + s2[1]);
 				if (ch < 0x80)
 				{
 					if (i >= len1)
@@ -1175,10 +1122,10 @@ namespace StbTrueTypeSharp
 				else if (ch >= 0xd800 && ch < 0xdc00)
 				{
 					uint c = 0;
-					var ch2 = (ushort) (s2[2] * 256 + s2[3]);
+					var ch2 = (ushort)(s2[2] * 256 + s2[3]);
 					if (i + 3 >= len1)
 						return -1;
-					c = (uint) (((ch - 0xd800) << 10) + (ch2 - 0xdc00) + 0x10000);
+					c = (uint)(((ch - 0xd800) << 10) + (ch2 - 0xdc00) + 0x10000);
 					if (s1[i++] != 0xf0 + (c >> 18))
 						return -1;
 					if (s1[i++] != 0x80 + ((c >> 12) & 0x3f))
@@ -1223,28 +1170,28 @@ namespace StbTrueTypeSharp
 			int next_id)
 		{
 			var i = 0;
-			var count = (int) ttUSHORT(fc + nm + 2);
-			var stringOffset = (int) (nm + ttUSHORT(fc + nm + 4));
+			var count = (int)ttUSHORT(fc + nm + 2);
+			var stringOffset = (int)(nm + ttUSHORT(fc + nm + 4));
 			for (i = 0; i < count; ++i)
 			{
-				var loc = (uint) (nm + 6 + 12 * i);
-				var id = (int) ttUSHORT(fc + loc + 6);
+				var loc = (uint)(nm + 6 + 12 * i);
+				var id = (int)ttUSHORT(fc + loc + 6);
 				if (id == target_id)
 				{
-					var platform = (int) ttUSHORT(fc + loc + 0);
-					var encoding = (int) ttUSHORT(fc + loc + 2);
-					var language = (int) ttUSHORT(fc + loc + 4);
+					var platform = (int)ttUSHORT(fc + loc + 0);
+					var encoding = (int)ttUSHORT(fc + loc + 2);
+					var language = (int)ttUSHORT(fc + loc + 4);
 					if (platform == 0 || platform == 3 && encoding == 1 || platform == 3 && encoding == 10)
 					{
-						var slen = (int) ttUSHORT(fc + loc + 8);
-						var off = (int) ttUSHORT(fc + loc + 10);
+						var slen = (int)ttUSHORT(fc + loc + 8);
+						var off = (int)ttUSHORT(fc + loc + 10);
 						var matchlen =
 							stbtt__CompareUTF8toUTF16_bigendian_prefix(name, nlen, fc + stringOffset + off, slen);
 						if (matchlen >= 0)
 						{
 							if (i + 1 < count && ttUSHORT(fc + loc + 12 + 6) == next_id &&
-							    ttUSHORT(fc + loc + 12) == platform && ttUSHORT(fc + loc + 12 + 2) == encoding &&
-							    ttUSHORT(fc + loc + 12 + 4) == language)
+								ttUSHORT(fc + loc + 12) == platform && ttUSHORT(fc + loc + 12 + 2) == encoding &&
+								ttUSHORT(fc + loc + 12 + 4) == language)
 							{
 								slen = ttUSHORT(fc + loc + 12 + 8);
 								off = ttUSHORT(fc + loc + 12 + 10);
@@ -1257,7 +1204,7 @@ namespace StbTrueTypeSharp
 								{
 									++matchlen;
 									if (stbtt_CompareUTF8toUTF16_bigendian_internal(name + matchlen, nlen - matchlen,
-										    fc + stringOffset + off, slen) != 0)
+											fc + stringOffset + off, slen) != 0)
 										return 1;
 								}
 							}
@@ -1324,12 +1271,12 @@ namespace StbTrueTypeSharp
 		public static int stbtt_FindMatchingFont_internal(byte[] font_collection, FakePtr<byte> name_utf8, int flags)
 		{
 			var i = 0;
-			for (i = 0;; ++i)
+			for (i = 0; ; ++i)
 			{
 				var off = stbtt_GetFontOffsetForIndex(font_collection, i);
 				if (off < 0)
 					return off;
-				if (stbtt__matches(font_collection, (uint) off, name_utf8, flags) != 0)
+				if (stbtt__matches(font_collection, (uint)off, name_utf8, flags) != 0)
 					return off;
 			}
 		}
